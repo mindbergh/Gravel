@@ -16,6 +16,8 @@
 #include <bits/fileno.h>
 #include <syscall.h>
 #include <types.h>
+#include <config.h>
+#include <device.h>
 
 
 
@@ -86,7 +88,23 @@ void swi_dispatch(unsigned int swi_number, struct ex_context* c) {
         case MUTEX_LOCK:
         case MUTEX_UNLOCK:
         case CREATE_SWI:
+            c->r0 = task_create((task_t *)c->r0, (size_t)c->r1);
+            break;
         case EVENT_WAIT:
+        {
+            unsigned int dev_num = ((unsigned)(c->r0));
+            if (dev_num == 0 || dev_num >= NUM_DEVICES) {
+                c->r0 = EINVAL;
+            } else {
+                dev_wait(dev_num);
+                /*
+                 * return 0 upon the successful
+                 * acquisition of the mutex
+                 */
+                c->r0 = 0;
+            }
+            break;
+        }
         default:
             invalid_syscall(swi_number);
     }
@@ -142,7 +160,7 @@ void init_interrupt(void) {
     /* wiring IRQ handler */
     if (wiring_handler(EX_IRQ, irq_handler) < 0) {
         printf("The instruction in the vector table is unrecognized\n");
-        
+
     }
 
 }

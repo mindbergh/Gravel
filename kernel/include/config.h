@@ -29,6 +29,7 @@
 #define IDLE_PRIO             63
 #define OS_MAX_TASKS          64
 #define OS_AVAIL_TASKS        63
+#define NUM_RUN_GROUP          8
 
 /* OS_NUM_MUTEX must be at lease 32 */
 #define OS_NUM_MUTEX	32

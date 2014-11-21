@@ -1,5 +1,5 @@
 /** @file sched.c
- * 
+ *
  * @brief Top level implementation of the scheduler.
  *
  * @author Kartik Subramanian <ksubrama@andrew.cmu.edu>
@@ -22,17 +22,19 @@ tcb_t system_tcb[OS_MAX_TASKS]; /*allocate memory for system TCBs */
 
 void sched_init(task_t* main_task  __attribute__((unused)))
 {
+    /* commented by Mike
 	task_t *idle_task = (task_t*)malloc(sizeof(task_t));
 	memset(idle_task, 0, sizeof(task_t));
 	idle_task->lambda = idle;
-	
+    */
+
 
 }
 
 /**
  * @brief This is the idle task that the system runs when no other task is runnable
  */
- 
+
 static void __attribute__((unused)) idle(void)
 {
 	 enable_interrupts();
@@ -54,6 +56,13 @@ static void __attribute__((unused)) idle(void)
  */
 void allocate_tasks(task_t** tasks  __attribute__((unused)), size_t num_tasks  __attribute__((unused)))
 {
-	
+    int start_priority = 0;
+    int i;
+    /* initialization of tcb */
+    for (i = num_tasks - 1; i >= 0; i++) {
+        system_tcb[i].native_prio = start_priority + i;
+        system_tcb[i].cur_prio = start_priority + i;
+    }
+
 }
 

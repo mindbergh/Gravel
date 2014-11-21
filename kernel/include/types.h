@@ -1,6 +1,6 @@
 /**
  * @file   types.h
- * 
+ *
  * @brief  Standard Integer Types and Limits
  *         Corresponds to ANSI C99 stdint.h, stddef.h and limits.h
  *
@@ -94,6 +94,6 @@ typedef uint32_t            uintptr_t;
 
 #define VERBOSE 0
 
-//#define NULL ((void*)0)
+#define NULL ((void*)0)
 
 #endif /* _BITS_TYPES_H_ */

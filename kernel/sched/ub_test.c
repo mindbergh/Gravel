@@ -1,5 +1,5 @@
 /** @file ub_test.c
- * 
+ *
  * @brief The UB Test for basic schedulability
  *
  * @author Kartik Subramanian <ksubrama@andrew.cmu.edu>
@@ -13,7 +13,7 @@
 #include <exports.h>
 #endif
 
- 
+
 /**
  * @brief Perform UB Test and reorder the task list.
  *
@@ -29,9 +29,28 @@
  */
 int assign_schedule(task_t** tasks  __attribute__((unused)), size_t num_tasks  __attribute__((unused)))
 {
+    int i, j;
+    float utilization = 0;
+    task_t *tmp_task;
+    for (i = num_tasks - 1; i >= 0; i--) {
+        tmp_task = tasks[i];
+        utilization += (tmp_task->C / tmp_task->T);
+    }
+    float threshold = 0.693; // TODO n(2^(1/n) - 1)
+    if (utilization > threshold) {
+        return 0;
+    }
 
-	return 1; // fix this; dummy return to prevent compiler warnings	
+    /* sort the tasks according its rate*/
+    for (i = num_tasks - 1; i >= 0; i--) {
+        for (j = i - 1; j >= 0; j--) {
+            if (tasks[j+1]->T < tasks[j]->T) {
+                tmp_task = tasks[j+1];
+                tasks[j+1] = tasks[j];
+                tasks[j] = tmp_task;
+            }
+        }
+    }
+	return 1;
 }
-	
-
 

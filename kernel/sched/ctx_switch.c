@@ -1,11 +1,11 @@
 /** @file ctx_switch.c
- * 
+ *
  * @brief C wrappers around assembly context switch routines.
  *
  * @author Kartik Subramanian <ksubrama@andrew.cmu.edu>
  * @date 2008-11-21
  */
- 
+
 
 #include <types.h>
 #include <assert.h>
@@ -28,12 +28,12 @@ static __attribute__((unused)) tcb_t* cur_tcb; /* use this if needed */
  */
 void dispatch_init(tcb_t* idle __attribute__((unused)))
 {
-	
+
 }
 
 
 /**
- * @brief Context switch to the highest priority task while saving off the 
+ * @brief Context switch to the highest priority task while saving off the
  * current task state.
  *
  * This function needs to be externally synchronized.
@@ -42,11 +42,11 @@ void dispatch_init(tcb_t* idle __attribute__((unused)))
  */
 void dispatch_save(void)
 {
-	
+
 }
 
 /**
- * @brief Context switch to the highest priority task that is not this task -- 
+ * @brief Context switch to the highest priority task that is not this task --
  * don't save the current task state.
  *
  * There is always an idle task to switch to.
@@ -58,14 +58,14 @@ void dispatch_nosave(void)
 
 
 /**
- * @brief Context switch to the highest priority task that is not this task -- 
+ * @brief Context switch to the highest priority task that is not this task --
  * and save the current task but don't mark is runnable.
  *
  * There is always an idle task to switch to.
  */
 void dispatch_sleep(void)
 {
-	
+
 }
 
 /**
@@ -81,5 +81,7 @@ uint8_t get_cur_prio(void)
  */
 tcb_t* get_cur_tcb(void)
 {
-	return (tcb_t *) 0; //fix this; dummy return to prevent compiler warning
+    // modified by Mike
+    return cur_tcb;
+	//return (tcb_t *) 0; //fix this; dummy return to prevent compiler warning
 }

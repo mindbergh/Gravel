@@ -1,5 +1,5 @@
 /** @file run_queue.c
- * 
+ *
  * @brief Run queue maintainence routines.
  *
  * @author Kartik Subramanian <ksubrama@andrew.cmu.edu>
@@ -13,14 +13,15 @@
 #include <sched.h>
 #include "sched_i.h"
 
-
+#define SET_BIT(x, y)   (x = x | (1 << y))
+#define CLEAR_BIT(x, y) (x = x & (~(1 << y)))
 
 static tcb_t* run_list[OS_MAX_TASKS]  __attribute__((unused));
 
 /* A high bit in this bitmap means that the task whose priority is
  * equal to the bit number of the high bit is runnable.
  */
-static uint8_t run_bits[OS_MAX_TASKS/8];
+static uint8_t run_bits[OS_MAX_TASKS/NUM_RUN_GROUP];
 
 /* This is a trie structure.  Tasks are grouped in groups of 8.  If any task
  * in a particular group is runnable, the corresponding group flag is set.
@@ -61,7 +62,8 @@ void runqueue_init(void)
 	int i;
 	group_run_bits = 0;
 	for (i = 0; i < OS_MAX_TASKS/8; i++) {
-		run_bits[i] = NULL;
+		/*run_bits[i] = NULL; commented by Mike*/
+		run_bits[i] = 0;
 	}
 }
 
@@ -75,13 +77,16 @@ void runqueue_init(void)
  */
 void runqueue_add(tcb_t* tcb, uint8_t prio)
 {
-	uint8_t group_id = prio / 8;
-	uint8_t bit = prio % 8;
-	
-	assert(!(run_bits[group_id] & bit));   // The cooresponding pro bit should not be set already
+	uint8_t group_id = prio / NUM_RUN_GROUP;
+	uint8_t bit = prio % NUM_RUN_GROUP;
+
+    /* The cooresponding pro bit should not be set already */
+	assert(!(run_bits[group_id] & (1 << bit)));
 	assert(run_list[prio] == NULL);
-	group_run_bits |= 1 << group_id;
-	run_bits[group_id] |= 1 << bit;
+
+    SET_BIT(group_run_bits, group_id);
+    SET_BIT(run_bits[group_id], bit);
+
 	run_list[prio] = tcb;
 }
 
@@ -91,23 +96,24 @@ void runqueue_add(tcb_t* tcb, uint8_t prio)
  *
  * @return  The tcb at enqueued at the given priority.
  *
- * This function needs to be externally synchronized.
+ * This function needs to be externally synchronized. //TODO
  */
 tcb_t* runqueue_remove(uint8_t prio)
 {
-	uint8_t group_id = prio / 8;
-	uint8_t bit = prio % 8;
+	uint8_t group_id = prio / NUM_RUN_GROUP;
+	uint8_t bit = prio % NUM_RUN_GROUP;
 	tcb_t *ret;
 
-	assert((run_bits[group_id] & bit));   // The cooresponding pro bit should not be set already
+    /* The cooresponding pro bit should be set */
+	assert((run_bits[group_id] & (1 << bit)));
 	assert(run_list[prio]);
 
-	group_run_bits &= ~(1 << group_id);
-	run_bits[group_id] &= ~(1 << bit);
-	ret = run_list[prio]; 
+    CLEAR_BIT(group_run_bits, group_id);
+    CLEAR_BIT(run_bits[group_id], bit);
+	ret = run_list[prio];
 	run_list[prio] = NULL;
 
-	return ret; // fix this; dummy return to prevent warning messages	
+	return ret;
 }
 
 /**
@@ -118,5 +124,5 @@ uint8_t highest_prio(void)
 {
 	uint8_t group_id = prio_unmap_table[group_run_bits];
 	uint8_t bit = prio_unmap_table[run_bits[group_id]];
-	return (group_id << 3) + bit;	
+	return (group_id * NUM_RUN_GROUP) + bit;
 }

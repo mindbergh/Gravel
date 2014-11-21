@@ -14,3 +14,4 @@ FUNC(mutex_lock)
 	@ Add code here.  Put your name at the top.
 	swi MUTEX_LOCK
 	mov pc,lr
+

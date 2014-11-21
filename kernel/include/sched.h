@@ -13,6 +13,7 @@
 #include <types.h>
 
 void sched_init(task_t* main_task);
+static void idle(void);
 
 /* Scheduler invocations */
 void dispatch_save(void);
