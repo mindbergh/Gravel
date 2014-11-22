@@ -28,6 +28,8 @@ static __attribute__((unused)) tcb_t* cur_tcb; /* use this if needed */
  */
 void dispatch_init(tcb_t* idle __attribute__((unused)))
 {
+    // TODO actually I don't know exactly what to de in this function
+    cur_tcb = idle;
 
 }
 
@@ -73,7 +75,7 @@ void dispatch_sleep(void)
  */
 uint8_t get_cur_prio(void)
 {
-	return 1; //fix this; dummy return to prevent compiler warning
+    return cur_tcb->cur_prio;
 }
 
 /**
@@ -81,7 +83,5 @@ uint8_t get_cur_prio(void)
  */
 tcb_t* get_cur_tcb(void)
 {
-    // modified by Mike
     return cur_tcb;
-	//return (tcb_t *) 0; //fix this; dummy return to prevent compiler warning
 }

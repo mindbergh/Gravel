@@ -62,8 +62,7 @@ void runqueue_init(void)
 	int i;
 	group_run_bits = 0;
 	for (i = 0; i < OS_MAX_TASKS/8; i++) {
-		/*run_bits[i] = NULL; commented by Mike*/
-		run_bits[i] = 0;
+        run_bits[i] = 0;
 	}
 }
 

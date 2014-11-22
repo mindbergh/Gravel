@@ -56,13 +56,48 @@ static void __attribute__((unused)) idle(void)
  */
 void allocate_tasks(task_t** tasks  __attribute__((unused)), size_t num_tasks  __attribute__((unused)))
 {
-    int start_priority = 0;
     int i;
+
+    /* initialize run queue */
+    runqueue_init();
+
     /* initialization of tcb */
     for (i = num_tasks - 1; i >= 0; i++) {
-        system_tcb[i].native_prio = start_priority + i;
-        system_tcb[i].cur_prio = start_priority + i;
+
+        system_tcb[i].native_prio = i;
+        system_tcb[i].cur_prio = i;
+
+        /*
+         * r4 = pc, r5 = first argument, r6 = sp
+         * for detail, please check launch_task(void)
+         * */
+        system_tcb[i].context.r4 = (uint32_t)tasks[i]->lambda;
+        system_tcb[i].context.r5 = (uint32_t)tasks[i]->data;
+        system_tcb[i].context.r6 = (uint32_t)tasks[i]->stack_pos;
+
+        system_tcb[i].holds_lock = 0;
+        system_tcb[i].sleep_queue = NULL;
+
+        // TODO I don't understand the purpose of kstatck
+        // system_tcb[i].kstack = ??;
+
+        /* setup the runqueue */
+        runqueue_add(&(system_tcb[i]), i);
     }
 
+
+
+    /* setup for the idle */
+    system_tcb[IDLE_PRIO].native_prio = IDLE_PRIO;
+    system_tcb[IDLE_PRIO].cur_prio = IDLE_PRIO;
+    system_tcb[IDLE_PRIO].context.r4 = (uint32_t)idle;
+    system_tcb[IDLE_PRIO].context.r5 = (uint32_t)NULL;
+    system_tcb[IDLE_PRIO].context.r6 = (uint32_t)NULL;
+
+    system_tcb[IDLE_PRIO].holds_lock = 0;
+    system_tcb[IDLE_PRIO].sleep_queue = NULL;
+    // TODO smae problem for kstack here
+
+    runqueue_add(&(system_tcb[IDLE_PRIO]), IDLE_PRIO);
 }
 

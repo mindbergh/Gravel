@@ -29,7 +29,7 @@ int task_create(task_t* tasks  __attribute__((unused)), size_t num_tasks  __attr
     //Inside the task_create syscall, your code will look at the
     //task_t data structure to learn everything needed about the tasks Your
     //kernel should deal with unexpected input not conforming to
-    //specifications??? TODO
+    //specifications??? TODO anyother spec to check?
 
     int i;
     task_t **tasks_ptr_arr;
@@ -38,27 +38,36 @@ int task_create(task_t* tasks  __attribute__((unused)), size_t num_tasks  __attr
      * the OS supports. One if for special task and one is
      * for idle task.
     */
-    if (num_tasks > OS_MAX_TASKS - 1) {
-        return EINVAL;
+    if (num_tasks > OS_AVAIL_TASKS) {
+        return -EINVAL;
     }
     /* Tasks points to region whose bounds lie outside valid address space. */
     // TODO
     if (1) {
-        return EFAULT;
+        return -EFAULT;
     }
     /* declare an array of pointers such that it is sortable */
     tasks_ptr_arr = (task_t **)malloc(sizeof(task_t *) * num_tasks);
     for (i = num_tasks - 1; i >= 0 ; i--) {
         tasks_ptr_arr[0] = &(tasks[i]);
     }
+
     /* The given task set is not schedulable. */
     if (!assign_schedule(tasks_ptr_arr, num_tasks)) {
         free(tasks_ptr_arr);
-        return ESCHED;
+        return -ESCHED;
     }
 
+    /* setup tcb and idle tcb */
     allocate_tasks(tasks_ptr_arr, num_tasks);
 
+    /* initialize devices */
+    dev_init();
+
+    /*
+     * After all TCBs have been set up, you must context switch to the
+     * highest priority task that has been setup
+     */
 
 
     /* should never return */
