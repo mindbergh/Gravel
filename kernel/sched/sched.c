@@ -70,7 +70,8 @@ void allocate_tasks(task_t** tasks  __attribute__((unused)), size_t num_tasks  _
         /*
          * r4 = pc, r5 = first argument, r6 = sp
          * for detail, please check launch_task(void)
-         * */
+         * TODO should we initialize other registers in the context?
+         */
         system_tcb[i].context.r4 = (uint32_t)tasks[i]->lambda;
         system_tcb[i].context.r5 = (uint32_t)tasks[i]->data;
         system_tcb[i].context.r6 = (uint32_t)tasks[i]->stack_pos;
