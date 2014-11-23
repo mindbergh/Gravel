@@ -66,15 +66,18 @@ void dev_init(void)
  */
 void dev_wait(unsigned int dev __attribute__((unused)))
 {
+    disable_interrupts();
 
     dev_t *devc = &(devices[dev]);
     tcb_t *cur_tcb = get_cur_tcb();
-    // shoud we insert according to the priority ?
-    // TODO now only insert into the first place
+
+    /* insert into the first place */
     cur_tcb->sleep_queue = devc->sleep_queue;
     devc->sleep_queue = cur_tcb;
 
-    // do context switch ? TODO
+    /* let current task sleep */
+    dispatch_sleep();
+    enable_interrupts();
 }
 
 
@@ -88,11 +91,38 @@ void dev_wait(unsigned int dev __attribute__((unused)))
 void dev_update(unsigned long millis __attribute__((unused)))
 {
     /*
+     * determine which device should be updated
      * if the event of a device has accured, do
-     * 1) wake up all tasks on the sleep_queue
-     * 2) make them ready to run
-     * 3) update device
+     *  1) make all tasks on the sleep_queue ready to run
+     *  2) update device
      */
-    //TODO
+    int i;
+    bool_e need_ctx = FALSE;
+    dev_t *device;
+    tcb_t *tcb_iterator, *tmp_tcb;
+
+    disable_interrupts();
+
+    for (i = 0; i < NUM_DEVICES; i++) {
+        device = &(devices[i]);
+        if (device->next_match <= millis) {
+            /* step 1 */
+            tcb_iterator = device->sleep_queue;
+            while (tcb_iterator != NULL) {
+                need_ctx = TRUE;
+                runqueue_add(tcb_iterator, tcb_iterator->cur_prio);
+                tmp_tcb = tcb_iterator;
+                tcb_iterator = tcb_iterator->sleep_queue;
+                tmp_tcb->sleep_queue = NULL;
+            }
+
+            /* step 2 */
+        }
+    }
+
+    if (need_ctx) {
+        dispatch_save();
+    }
+    enable_interrupts();
 }
 

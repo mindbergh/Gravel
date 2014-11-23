@@ -46,11 +46,14 @@ void dispatch_save(void)
 {
 	// by Ming
 	// Unsure: Need to disinterputs?
+	tcb_t *old_tcb;
+	runqueue_add(cur_tcb, cur_tcb->native_prio);
 	tcb_t *task_to_switch = runqueue_remove(highest_prio());
-	tcb_t *tmp = cur_tcb;
-	cur_tcb = task_to_switch;
-	runqueue_add(tmp, tmp->native_prio);
-	ctx_switch_full(&(task_to_switch->context), &(tmp->context));
+    if (task_to_switch != cur_tcb) {
+        old_tcb = cur_tcb;
+        cur_tcb = task_to_switch;
+        ctx_switch_full(&(task_to_switch->context), &(old_tcb->context));
+    }
 }
 
 /**
@@ -61,11 +64,9 @@ void dispatch_save(void)
  */
 void dispatch_nosave(void)
 {
-	// by Ming
-	// Unsure: Need to disinterputs?
 	tcb_t *task_to_switch = runqueue_remove(highest_prio());
 	cur_tcb = task_to_switch;
-	ctx_switch_full(&(task_to_switch->context));
+	ctx_switch_half(&(task_to_switch->context));
 }
 
 
