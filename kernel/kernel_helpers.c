@@ -85,8 +85,11 @@ void swi_dispatch(unsigned int swi_number, struct ex_context* c) {
             sleep_syscall((unsigned)c->r0);
             break;
         case MUTEX_CREATE:
+            c->r0 = mutex_create();
         case MUTEX_LOCK:
+            mutex_lock(r->r0);
         case MUTEX_UNLOCK:
+            mutex_unlock(r->r0);
         case CREATE_SWI:
             c->r0 = task_create((task_t *)c->r0, (size_t)c->r1);
             break;
