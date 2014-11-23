@@ -102,8 +102,42 @@ int mutex_lock(int mutex  __attribute__((unused)))
 	return 1; // fix this to return the correct value
 }
 
-int mutex_unlock(int mutex  __attribute__((unused)))
+int mutex_unlock(int mutex)
 {
-	return 1; // fix this to return the correct value
+    tcb_t *cur_tcb, *tcb_iterator;
+    mutex_t *cur_mutex;
+
+    disable_interrupts();
+
+    /* check whether the mutex number is valid */
+    if (mutex < 0 || (mutex >= OS_NUM_MUTEX - 1) ||
+        ((cur_mutex = &(gtMutex[mutex])) && cur_mutex->bAvailable)) {
+        enable_interrupts();
+        return -EINVAL;
+    }
+
+    cur_tcb = get_cur_tcb();
+    /* the current task should be holding this mutex */
+    if (cur_tcb != cur_mutex->pHolding_Tcb) {
+        enable_interrupts();
+        return -EPERM; /* Operation not permitted */
+    }
+
+    
+
+    /* To waken or not to waken */
+    if (cur_mutex.pSleep_queue != NULL) {
+        /* Put the 1st task in the sleep queue into run queue */    
+        tcb_t *task_to_waken = cur_mutex->pSleep_queue;
+        cur_mutex->pSleep_queue = task_to_waken->sleep_queue;
+        cur_mutex->pHolding_Tcb = task_to_waken;
+        cur_mutex->bLock = TRUE;
+        runqueue_add(task_to_waken, task_to_waken->cur_prio); 
+    } else {
+        /* No task is waiting */
+        cur_mutex->bLock = FALSE;
+    }
+    enable_interrupts();
+	return 0; // fix this to return the correct value
 }
 
