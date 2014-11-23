@@ -27,7 +27,7 @@
  * @return 0  The test failed.
  * @return 1  Test succeeded.  The tasks are now in order.
  */
-int assign_schedule(task_t** tasks  __attribute__((unused)), size_t num_tasks  __attribute__((unused)))
+int assign_schedule(task_t** tasks, size_t num_tasks)
 {
     int i, j;
     float utilization = 0;
