@@ -46,6 +46,7 @@ int mutex_create(void)
     /* bAvailable = TRUE means it has been created */
     gtMutex[cur_mutex_num].bAvailable = FALSE;
     cur_mutex_num++;
+
     enable_interrupts();
     return cur_mutex_num;
 }
@@ -84,27 +85,19 @@ int mutex_lock(int mutex  __attribute__((unused)))
             tcb_iterator->sleep_queue = cur_tcb;
         }
         dispatch_sleep();
+    } else {
+        cur_mutex->bLock = TRUE;
     }
-    /*
-     * TODO
-     * I am not sure if the task will return from dispatch_sleep()?
-     * If so, should we call get_cur_tcb() again?
-     */
-    cur_mutex->bLock = TRUE;
     cur_mutex->pHolding_Tcb = cur_tcb;
-    /* remove from the sleep list */
-    if (cur_mutex->pSleep_queue == cur_tcb) {
-        // TODO
-    }
-
+    cur_tcb->holds_lock++;
 
     enable_interrupts();
-	return 1; // fix this to return the correct value
+	return 0;
 }
 
 int mutex_unlock(int mutex)
 {
-    tcb_t *cur_tcb, *tcb_iterator;
+    tcb_t *cur_tcb, *task_to_waken;
     mutex_t *cur_mutex;
 
     disable_interrupts();
@@ -123,21 +116,21 @@ int mutex_unlock(int mutex)
         return -EPERM; /* Operation not permitted */
     }
 
-    
-
     /* To waken or not to waken */
-    if (cur_mutex.pSleep_queue != NULL) {
-        /* Put the 1st task in the sleep queue into run queue */    
-        tcb_t *task_to_waken = cur_mutex->pSleep_queue;
+    if ((task_to_waken = cur_mutex->pSleep_queue) != NULL) {
+        /* Put the 1st task in the sleep queue into run queue */
         cur_mutex->pSleep_queue = task_to_waken->sleep_queue;
-        cur_mutex->pHolding_Tcb = task_to_waken;
-        cur_mutex->bLock = TRUE;
-        runqueue_add(task_to_waken, task_to_waken->cur_prio); 
+        task_to_waken->sleep_queue = NULL;
+        runqueue_add(task_to_waken, task_to_waken->cur_prio);
     } else {
         /* No task is waiting */
         cur_mutex->bLock = FALSE;
     }
+    /* task_to_waken could be NULL or other tcb */
+    cur_mutex->pHolding_Tcb = task_to_waken;
+    cur_tcb->holds_lock--;
+
     enable_interrupts();
-	return 0; // fix this to return the correct value
+	return 0;
 }
 

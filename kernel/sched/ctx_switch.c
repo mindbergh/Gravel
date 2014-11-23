@@ -61,11 +61,9 @@ void dispatch_save(void)
  */
 void dispatch_nosave(void)
 {
-	// by Ming
-	// Unsure: Need to disinterputs?
 	tcb_t *task_to_switch = runqueue_remove(highest_prio());
 	cur_tcb = task_to_switch;
-	ctx_switch_full(&(task_to_switch->context));
+	ctx_switch_half(&(task_to_switch->context));
 }
 
 
