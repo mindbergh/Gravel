@@ -93,7 +93,7 @@ void swi_dispatch(unsigned int swi_number, struct ex_context* c) {
         case EVENT_WAIT:
         {
             unsigned int dev_num = ((unsigned)(c->r0));
-            if (dev_num == 0 || dev_num >= NUM_DEVICES) {
+            if (dev_num >= NUM_DEVICES) {
                 c->r0 = EINVAL;
             } else {
                 dev_wait(dev_num);
