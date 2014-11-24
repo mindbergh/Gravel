@@ -28,9 +28,18 @@ static __attribute__((unused)) tcb_t* cur_tcb; /* use this if needed */
  */
 void dispatch_init(tcb_t* idle __attribute__((unused)))
 {
-    // TODO actually I don't know exactly what to de in this function
-    cur_tcb = idle;
+    idle->native_prio = IDLE_PRIO;
+    idle->cur_prio = IDLE_PRIO;
+    idle->context.r4 = (uint32_t)idle;
+    idle->context.r5 = (uint32_t)NULL;
+    idle->context.r6 = (uint32_t)NULL;
+    idle->context.lr = launch_task;
 
+    idle->holds_lock = 0;
+    idle->sleep_queue = NULL;
+    // TODO smae problem for kstack here
+    //
+    runqueue_add(idle, idle->native_prio);
 }
 
 

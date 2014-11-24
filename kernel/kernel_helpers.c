@@ -94,20 +94,8 @@ void swi_dispatch(unsigned int swi_number, struct ex_context* c) {
             c->r0 = task_create((task_t *)c->r0, (size_t)c->r1);
             break;
         case EVENT_WAIT:
-        {
-            unsigned int dev_num = ((unsigned)(c->r0));
-            if (dev_num >= NUM_DEVICES) {
-                c->r0 = EINVAL;
-            } else {
-                dev_wait(dev_num);
-                /*
-                 * return 0 upon the successful
-                 * acquisition of the mutex
-                 */
-                c->r0 = 0;
-            }
+            event_wait((unsigned int)c->r0);
             break;
-        }
         default:
             invalid_syscall(swi_number);
     }

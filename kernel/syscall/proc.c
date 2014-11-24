@@ -42,8 +42,8 @@ int task_create(task_t* tasks  __attribute__((unused)), size_t num_tasks  __attr
         return -EINVAL;
     }
     /* Tasks points to region whose bounds lie outside valid address space. */
-    // TODO
-    if (1) {
+    if (!valid_addr(tasks, num_tasks * sizeof(task_t),
+                USR_START_ADDR, USR_END_ADDR)) {
         return -EFAULT;
     }
     /* declare an array of pointers such that it is sortable */
@@ -58,16 +58,19 @@ int task_create(task_t* tasks  __attribute__((unused)), size_t num_tasks  __attr
         return -ESCHED;
     }
 
-    /* setup tcb and idle tcb */
-    allocate_tasks(tasks_ptr_arr, num_tasks);
-
     /* initialize devices */
     dev_init();
+
+    /* setup tcb and idle tcb and initialize runqueue */
+    allocate_tasks(tasks_ptr_arr, num_tasks);
 
     /*
      * After all TCBs have been set up, you must context switch to the
      * highest priority task that has been setup
      */
+
+    sched_init(NULL);
+
 
 
     /* should never return */
@@ -76,7 +79,12 @@ int task_create(task_t* tasks  __attribute__((unused)), size_t num_tasks  __attr
 
 int event_wait(unsigned int dev  __attribute__((unused)))
 {
-  return 1; /* remove this line after adding your code */
+    if (dev >= NUM_DEVICES) {
+        return -EINVAL;
+    } else {
+        dev_wait(dev);
+        return 0;
+    }
 }
 
 /* An invalid syscall causes the kernel to exit. */
