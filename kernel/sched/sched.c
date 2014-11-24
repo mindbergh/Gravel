@@ -58,7 +58,7 @@ void allocate_tasks(task_t** tasks, size_t num_tasks)
 {
     dbg_printf("allocate_tasks: entering\n");
     int i;
-
+    sched_context_t* ctx;
     /* initialize run queue */
     dbg_printf("allocate_tasks: calling runqueue_init\n");
     runqueue_init();
@@ -66,7 +66,7 @@ void allocate_tasks(task_t** tasks, size_t num_tasks)
     /* initialization of tcb */
     dbg_printf("allocate_tasks: initializing tcbs\n");
     for (i = num_tasks - 1; i >= 0; i--) {
-
+        ctx = &system_tcb[i].context; 
         system_tcb[i].native_prio = i;
         system_tcb[i].cur_prio = i;
 
@@ -75,11 +75,13 @@ void allocate_tasks(task_t** tasks, size_t num_tasks)
          * for detail, please check launch_task(void)
          * TODO should we initialize other registers in the context?
          */
-        system_tcb[i].context.r4 = (uint32_t)tasks[i]->lambda;
-        system_tcb[i].context.r5 = (uint32_t)tasks[i]->data;
-        system_tcb[i].context.r6 = (uint32_t)tasks[i]->stack_pos;
-        system_tcb[i].context.lr = launch_task;
-
+        ctx->r4 = (uint32_t)tasks[i]->lambda;
+        ctx->r5 = (uint32_t)tasks[i]->data;
+        ctx->r6 = (uint32_t)tasks[i]->stack_pos;
+        ctx->r8 = global_data;
+        ctx->sp = system_tcb[i].kstack_high;
+        ctx->lr = launch_task;
+        
         system_tcb[i].holds_lock = 0;
         system_tcb[i].sleep_queue = NULL;
 

@@ -34,6 +34,8 @@ void dispatch_init(tcb_t* idle __attribute__((unused)))
     idle->context.r4 = (uint32_t)idle;
     idle->context.r5 = (uint32_t)NULL;
     idle->context.r6 = (uint32_t)NULL;
+    idle->context.r8 = global_data;
+    idle->context.sp = system_tcb[IDLE_PRIO].kstack_high;
     idle->context.lr = launch_task;
 
     idle->holds_lock = 0;

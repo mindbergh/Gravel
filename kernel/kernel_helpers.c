@@ -119,7 +119,7 @@ int wiring_handler(unsigned vec_num, void *handler_addr) {
     /* backup the original instructions at SWI_handler */
     instruction_backup[vec_num][0] = *(uboot_handler_addr[vec_num]);
     instruction_backup[vec_num][1] = *(uboot_handler_addr[vec_num] + 1);
-
+    dbg_printf("%x addr = %x", vec_num, uboot_handler_addr[vec_num]);
     /* put new instructions at SWI_handler */
     *(uboot_handler_addr[vec_num]) = 0xe51ff004;       // pc, [pc, #-4]
     *(uboot_handler_addr[vec_num] + 1) = (unsigned int)handler_addr;
