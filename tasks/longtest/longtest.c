@@ -28,7 +28,7 @@ uint32_t sub(uint32_t this, uint32_t that) {
     } else {
         return (this - that);
     }
-}
+}   
 
 
 int main(int argc, char** argv) {

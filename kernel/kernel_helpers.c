@@ -50,15 +50,7 @@ void C_IRQ_handler(void) {
             puts("C_IRQ_handler: OSTMR_1\n");
         /* write 1 to this bit to acknowledge the match and clear it */
         reg_set(OSTMR_OSSR_ADDR, OSTMR_OSSR_M1);
-        // if (g_period > 0 && g_period_func != NULL) {
-
-        //     puts((char *)g_period_var);
-
-        //     /* execute the function */
-        //     g_period_func(g_period_var);
-        //     /* reset the math register */
-        //     update_timer(TIMER_1, g_period);
-        // }
+        dev_update(time_syscall());
     }
 
 //    printf("C_IRQ_handler: exiting\n");

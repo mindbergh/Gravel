@@ -53,7 +53,7 @@ void dev_init(void)
     /*unsigned long curr_time = time();*/
     for (i = 0; i < NUM_DEVICES; i++) {
         devices[i].sleep_queue = NULL;
-        devices[i].next_match = 
+        devices[i].next_match = time_syscall() + def_freq[i];
         // TODO devices[i].next_match = curr_time +
     }
 }

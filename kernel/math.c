@@ -98,4 +98,23 @@ unsigned int ilog2(unsigned int v)
 	return r;
 }
 
+
+uint32_t gcd (uint32_t a, uint32_t b)
+{
+  if (a == 0) return b;
+  return gcd (b % a, a);
+}
+
+uint32_t gcd4(const unsigned long* arr) {
+    uint32_t a = arr[0];
+    uint32_t b = arr[1];
+    uint32_t c = arr[2];
+    uint32_t d = arr[3];
+    uint32_t res = 0;
+    res = gcd(a, b);
+    res = gcd(res, c);
+    res = gcd(res, d);
+    return res;
+}
+
 #endif   /* NDEBUG */

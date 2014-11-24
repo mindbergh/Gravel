@@ -24,7 +24,7 @@ struct task
 	void*         data;        /**< Argument to the root function */
 	void*         stack_pos;   /**< The starting position of the task's sp */
 	unsigned long C;           /**< The worst-case computation time */
-	unsigned long T;           /**< The task's period */
+	unsigned long T;        	   /**< The task's period */
 };
 typedef struct task task_t;
 
