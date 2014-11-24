@@ -54,6 +54,7 @@ void fun1(void* str)
 	    mutex_val[cur_mutex]=mutex_val[cur_mutex]+fun1_opval;	
 		if(mutex_unlock(cur_mutex))
         {
+            printf("Fail with mutex:%d\n", cur_mutex);
             if(errno==EINVAL)
                 puts("EINVAL");
             if(errno==EPERM)

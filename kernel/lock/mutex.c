@@ -49,7 +49,7 @@ int mutex_create(void)
     cur_mutex_num++;
     dbg_printf("mutex_create: New mutex created: %d\n", cur_mutex_num);
     enable_interrupts();
-    return cur_mutex_num;
+    return cur_mutex_num - 1;
 }
 
 int mutex_lock(int mutex  __attribute__((unused)))
@@ -60,7 +60,7 @@ int mutex_lock(int mutex  __attribute__((unused)))
     disable_interrupts();
 
     /* check whether the mutex number is valid */
-    if (mutex < 0 || (mutex >= OS_NUM_MUTEX - 1) ||
+    if (mutex < 0 || (mutex >= OS_NUM_MUTEX) ||
         ((cur_mutex = &(gtMutex[mutex])) && cur_mutex->bAvailable)) {
         enable_interrupts();
         return -EINVAL;
@@ -104,7 +104,7 @@ int mutex_unlock(int mutex)
     disable_interrupts();
 
     /* check whether the mutex number is valid */
-    if (mutex < 0 || (mutex >= OS_NUM_MUTEX - 1) ||
+    if (mutex < 0 || (mutex >= OS_NUM_MUTEX) ||
         ((cur_mutex = &(gtMutex[mutex])) && cur_mutex->bAvailable)) {
         //printf("mutex_unlock: gonna fire EINVAL\n");    
         enable_interrupts();

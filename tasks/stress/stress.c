@@ -83,8 +83,8 @@ int main(int argc, char** argv)
 	}
 	tasks[i].lambda = fun2;
 	tasks[i].data = (void*)i;
-  tasks[i].stack_pos = (void*)(0xa2000000 + 0x10000 * i);
-  tasks[i].C = 0;
+  	tasks[i].stack_pos = (void*)(0xa2000000 + 0x10000 * i);
+  	tasks[i].C = 0;
 	tasks[i].T = END_TIME;
 	task_create(tasks, NUM_TASK);
 	argc=argc; /* remove compiler warning */
