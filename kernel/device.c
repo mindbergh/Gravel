@@ -15,6 +15,7 @@
 #include <arm/reg.h>
 #include <arm/psr.h>
 #include <arm/exception.h>
+#include <arm/timer.h>
 
 /**
  * @brief Fake device maintainence structure.
@@ -52,6 +53,7 @@ void dev_init(void)
     /*unsigned long curr_time = time();*/
     for (i = 0; i < NUM_DEVICES; i++) {
         devices[i].sleep_queue = NULL;
+        devices[i].next_match = 
         // TODO devices[i].next_match = curr_time +
     }
 }
@@ -64,7 +66,7 @@ void dev_init(void)
  *
  * @param dev  Device number.
  */
-void dev_wait(unsigned int dev __attribute__((unused)))
+void dev_wait(unsigned int dev)
 {
     disable_interrupts();
 
@@ -88,7 +90,7 @@ void dev_wait(unsigned int dev __attribute__((unused)))
  * interrupt corresponded to the interrupt frequency of a device, this
  * function should ensure that the task is made ready to run
  */
-void dev_update(unsigned long millis __attribute__((unused)))
+void dev_update(unsigned long millis)
 {
     /*
      * determine which device should be updated
@@ -115,7 +117,7 @@ void dev_update(unsigned long millis __attribute__((unused)))
                 tcb_iterator = tcb_iterator->sleep_queue;
                 tmp_tcb->sleep_queue = NULL;
             }
-
+            device->next_match += dev_freq[i];
             /* step 2 */
         }
     }
