@@ -14,6 +14,7 @@
 #include <device.h>
 #include <assert.h>
 #include <config.h>
+#include <lock.h>
 
 #include <exports.h>
 

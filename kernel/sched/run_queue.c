@@ -13,6 +13,7 @@
 #include <sched.h>
 #include "sched_i.h"
 
+
 #define SET_BIT(x, y)   (x = x | (1 << y))
 #define CLEAR_BIT(x, y) (x = x & (~(1 << y)))
 
@@ -78,9 +79,10 @@ void runqueue_add(tcb_t* tcb, uint8_t prio)
 {
 	uint8_t group_id = prio / NUM_RUN_GROUP;
 	uint8_t bit = prio % NUM_RUN_GROUP;
-
+	dbg_printf("group_id = %u, bit = %u\n", group_id, bit);
+	dbg_printf("run_bit = %u\n", run_bits[group_id]);
     /* The cooresponding pro bit should not be set already */
-	assert(!(run_bits[group_id] & (1 << bit)));
+	assert((run_bits[group_id] & (1 << bit)) == 0);
 	assert(run_list[prio] == NULL);
 
     SET_BIT(group_run_bits, group_id);

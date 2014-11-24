@@ -22,7 +22,7 @@
 #include <arm/physmem.h>
 #include <device.h>
 
-int task_create(task_t* tasks  __attribute__((unused)), size_t num_tasks  __attribute__((unused)))
+int task_create(task_t* tasks, size_t num_tasks)
 {
     dbg_printf("task_create: entering, num_tasks = %ld\n", num_tasks);
     //Warning: Don’t assume that user code will be sane
@@ -52,7 +52,7 @@ int task_create(task_t* tasks  __attribute__((unused)), size_t num_tasks  __attr
     /* declare an array of pointers such that it is sortable */
     tasks_ptr_arr = (task_t **)malloc(sizeof(task_t *) * num_tasks);
     for (i = num_tasks - 1; i >= 0 ; i--) {
-        tasks_ptr_arr[0] = &(tasks[i]);
+        tasks_ptr_arr[i] = &(tasks[i]);
     }
 
     /* The given task set is not schedulable. */

@@ -33,13 +33,17 @@ int assign_schedule(task_t** tasks, size_t num_tasks)
 
     int i, j;
     float utilization = 0;
+    float this_util = 0.0;
     task_t *tmp_task;
     for (i = num_tasks - 1; i >= 0; i--) {
         tmp_task = tasks[i];
-        utilization += (tmp_task->C / tmp_task->T);
+        this_util = ((float)tmp_task->C / tmp_task->T);
+        dbg_printf("C = %ld, T = %ld, This util is: %x\n",tmp_task->C, tmp_task->T, this_util);
+        utilization += this_util;
     }
     float threshold = 0.693; // TODO n(2^(1/n) - 1)
-    if (utilization > threshold) {
+    dbg_printf("Sum util = %x\n", utilization);
+    if (utilization > threshold) {        
         return 0;
     }
 

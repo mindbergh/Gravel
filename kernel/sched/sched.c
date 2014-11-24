@@ -54,7 +54,7 @@ static void __attribute__((unused)) idle(void)
  * @param tasks  A list of scheduled task descriptors.
  * @param size   The number of tasks is the list.
  */
-void allocate_tasks(task_t** tasks  __attribute__((unused)), size_t num_tasks  __attribute__((unused)))
+void allocate_tasks(task_t** tasks, size_t num_tasks)
 {
     dbg_printf("allocate_tasks: entering\n");
     int i;
@@ -65,7 +65,7 @@ void allocate_tasks(task_t** tasks  __attribute__((unused)), size_t num_tasks  _
 
     /* initialization of tcb */
     dbg_printf("allocate_tasks: initializing tcbs\n");
-    for (i = num_tasks - 1; i >= 0; i++) {
+    for (i = num_tasks - 1; i >= 0; i--) {
 
         system_tcb[i].native_prio = i;
         system_tcb[i].cur_prio = i;
