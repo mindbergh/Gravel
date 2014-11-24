@@ -22,9 +22,11 @@ tcb_t system_tcb[OS_MAX_TASKS]; /*allocate memory for system TCBs */
 
 void sched_init(task_t* main_task  __attribute__((unused)))
 {
+    dbg_printf("sched_init: entering\n");
     /*
      * I don't understand why we need main_task
      */
+    dbg_printf("sched_init: calling dispatch_nosave\n");
     dispatch_nosave();
 }
 
@@ -34,8 +36,9 @@ void sched_init(task_t* main_task  __attribute__((unused)))
 
 static void __attribute__((unused)) idle(void)
 {
-	 enable_interrupts();
-	 while(1);
+    dbg_printf("idle: entering\n");
+    enable_interrupts();
+    while(1);
 }
 
 /**
@@ -53,12 +56,15 @@ static void __attribute__((unused)) idle(void)
  */
 void allocate_tasks(task_t** tasks  __attribute__((unused)), size_t num_tasks  __attribute__((unused)))
 {
+    dbg_printf("allocate_tasks: entering\n");
     int i;
 
     /* initialize run queue */
+    dbg_printf("allocate_tasks: calling runqueue_init\n");
     runqueue_init();
 
     /* initialization of tcb */
+    dbg_printf("allocate_tasks: initializing tcbs\n");
     for (i = num_tasks - 1; i >= 0; i++) {
 
         system_tcb[i].native_prio = i;
@@ -85,6 +91,7 @@ void allocate_tasks(task_t** tasks  __attribute__((unused)), size_t num_tasks  _
     }
 
     /* setup for the idle */
+    dbg_printf("allocate_tasks: calling dispatch_init\n");
     dispatch_init(&(system_tcb[IDLE_PRIO]));
 }
 

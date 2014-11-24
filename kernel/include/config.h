@@ -34,4 +34,12 @@
 /* OS_NUM_MUTEX must be at lease 32 */
 #define OS_NUM_MUTEX	32
 
+
+#define DEBUG
+#ifdef DEBUG
+# define dbg_printf(...) printf(__VA_ARGS__)
+#else
+# define dbg_printf(...)
+#endif
+
 #endif /* _CONFIG_H_ */
