@@ -99,18 +99,21 @@ void runqueue_add(tcb_t* tcb, uint8_t prio)
  *
  * This function needs to be externally synchronized. //TODO
  */
-tcb_t* runqueue_remove(uint8_t prio)
+tcb_t* runqueue_remove(uint8_t prio)	
 {
 	uint8_t group_id = prio / NUM_RUN_GROUP;
 	uint8_t bit = prio % NUM_RUN_GROUP;
 	tcb_t *ret;
-
+	//dbg_printf("About to remove %u, in %u, ", prio, run_bits[group_id]);
     /* The cooresponding pro bit should be set */
 	assert((run_bits[group_id] & (1 << bit)));
 	assert(run_list[prio]);
-
-    CLEAR_BIT(group_run_bits, group_id);
-    CLEAR_BIT(run_bits[group_id], bit);
+	
+	CLEAR_BIT(run_bits[group_id], bit);
+    if (run_bits[group_id] == 0) {
+    	CLEAR_BIT(group_run_bits, group_id);
+    }
+    //dbg_printf("After remove %u\n", run_bits[group_id]);
 	ret = run_list[prio];
 	run_list[prio] = NULL;
 

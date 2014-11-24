@@ -29,21 +29,6 @@ static __attribute__((unused)) tcb_t* cur_tcb; /* use this if needed */
 void dispatch_init(tcb_t* idle __attribute__((unused)))
 {
     dbg_printf("dispatch_init: entering\n");
-    idle->native_prio = IDLE_PRIO;
-    idle->cur_prio = IDLE_PRIO;
-    idle->context.r4 = (uint32_t)idle;
-    idle->context.r5 = (uint32_t)NULL;
-    idle->context.r6 = (uint32_t)NULL;
-    idle->context.r8 = global_data;
-    idle->context.sp = system_tcb[IDLE_PRIO].kstack_high;
-    idle->context.lr = launch_task;
-
-    idle->holds_lock = 0;
-    idle->sleep_queue = NULL;
-    // TODO smae problem for kstack here
-    //
-    dbg_printf("dispatch_init: adding idle to runqueue\n");
-    runqueue_add(idle, idle->native_prio);
 }
 
 
@@ -87,6 +72,11 @@ void dispatch_nosave(void)
 	cur_tcb = task_to_switch;
     dbg_printf("dispatch_nosave: half switching to %d\n",
             task_to_switch->cur_prio);
+    dbg_printf("r4 = %x\n", task_to_switch->context.r4);
+    dbg_printf("r5 = %x\n", task_to_switch->context.r5);
+    dbg_printf("r6 = %x\n", task_to_switch->context.r6);
+    dbg_printf("lr = %x\n", task_to_switch->context.lr);
+    dbg_printf("launch_task = %x\n", launch_task);
 	ctx_switch_half(&(task_to_switch->context));
 }
 
@@ -101,9 +91,11 @@ void dispatch_sleep(void)
 {
 	// by Ming
 	// Unsure: Need to disinterputs?
+    dbg_printf("About to dispatch sleep, cur highest is %d\n", highest_prio());
 	tcb_t *task_to_switch = runqueue_remove(highest_prio());
 	tcb_t *tmp = cur_tcb;
 	cur_tcb = task_to_switch;
+    dbg_printf("Next task is %d\n", task_to_switch->cur_prio);
 	//runqueue_add(tmp, tmp->native_prio);
 	ctx_switch_full(&(task_to_switch->context), &(tmp->context));
 }

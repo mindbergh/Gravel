@@ -75,13 +75,14 @@ void allocate_tasks(task_t** tasks, size_t num_tasks)
          * for detail, please check launch_task(void)
          * TODO should we initialize other registers in the context?
          */
+
         ctx->r4 = (uint32_t)tasks[i]->lambda;
         ctx->r5 = (uint32_t)tasks[i]->data;
         ctx->r6 = (uint32_t)tasks[i]->stack_pos;
-        ctx->r8 = global_data;
-        ctx->sp = system_tcb[i].kstack_high;
-        ctx->lr = launch_task;
-        
+        ctx->r8 = (uint32_t)global_data;
+        ctx->sp = (void *)system_tcb[i].kstack_high;
+        ctx->lr = (void *)launch_task;
+    
         system_tcb[i].holds_lock = 0;
         system_tcb[i].sleep_queue = NULL;
 
@@ -91,9 +92,27 @@ void allocate_tasks(task_t** tasks, size_t num_tasks)
         /* setup the runqueue */
         runqueue_add(&(system_tcb[i]), i);
     }
+    /* Init idle task */
 
+    system_tcb[IDLE_PRIO].native_prio = IDLE_PRIO;
+    system_tcb[IDLE_PRIO].cur_prio = IDLE_PRIO;
+    system_tcb[IDLE_PRIO].holds_lock = 0;
+    ctx = &system_tcb[IDLE_PRIO].context;
+
+    ctx->r4 = 0;
+    ctx->r5 = 0;
+    ctx->r6 = 0;
+    ctx->r7 = 0;
+    ctx->r8 = global_data;
+    ctx->r9 = 0;
+    ctx->r10 = 0;
+    ctx->r11 = 0;
+    ctx->sp = system_tcb[IDLE_PRIO].kstack_high;
+    ctx->lr = &idle;
+
+    runqueue_add(&(system_tcb[IDLE_PRIO]), IDLE_PRIO);
     /* setup for the idle */
     dbg_printf("allocate_tasks: calling dispatch_init\n");
-    dispatch_init(&(system_tcb[IDLE_PRIO]));
+    //dispatch_init(&(system_tcb[IDLE_PRIO]));
 }
 

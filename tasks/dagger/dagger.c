@@ -22,8 +22,7 @@ void fun1(void* str)
 {
 	while(1)
 	{
-		//putchar((int)str);
-		write(STDOUT_FILENO, str, 1);
+		putchar((int)str);
 		if (event_wait(0) < 0)
 			panic("Dev 0 failed");
 	}
