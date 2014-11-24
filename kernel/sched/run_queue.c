@@ -82,8 +82,8 @@ void runqueue_add(tcb_t* tcb, uint8_t prio)
 	uint8_t bit = prio % NUM_RUN_GROUP;
 	//dbg_printf("run_bit = %u\n", run_bits[group_id]);
     /* The cooresponding pro bit should not be set already */
-	assert((run_bits[group_id] & (1 << bit)) == 0);
-	assert(run_list[prio] == NULL);
+	//assert((run_bits[group_id] & (1 << bit)) == 0);
+	//assert(run_list[prio] == NULL);
 
     SET_BIT(group_run_bits, group_id);
     SET_BIT(run_bits[group_id], bit);

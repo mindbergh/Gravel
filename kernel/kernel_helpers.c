@@ -78,10 +78,13 @@ void swi_dispatch(unsigned int swi_number, struct ex_context* c) {
             break;
         case MUTEX_CREATE:
             c->r0 = mutex_create();
+            break;
         case MUTEX_LOCK:
-            mutex_lock(c->r0);
+            c->r0 = mutex_lock(c->r0);
+            break;
         case MUTEX_UNLOCK:
-            mutex_unlock(c->r0);
+            c->r0 = mutex_unlock(c->r0);
+            break;
         case CREATE_SWI:
             c->r0 = task_create((task_t *)c->r0, (size_t)c->r1);
             break;
@@ -91,11 +94,12 @@ void swi_dispatch(unsigned int swi_number, struct ex_context* c) {
             dbg_printf("event_wait (%x) = %d\n", &c->r0, c->r0);
             dbg_printf("event_wait (%x) = %d\n", &c->r1, c->r1);
             dbg_printf("event_wait (%x) = %d\n", &c->r2, c->r2);
-            event_wait((unsigned int)c->r0);
+            c->r0 = event_wait((unsigned int)c->r0);
             break;
         default:
             invalid_syscall(swi_number);
     }
+    //printf("swi_dispatch: return: %d\n", c->r0);
 }
 
 

@@ -40,13 +40,14 @@ int mutex_create(void)
 {
     disable_interrupts();
     if (cur_mutex_num == OS_NUM_MUTEX) {
+        //printf("mutex_create: gonna fire ENOMEM\n");
         enable_interrupts();
         return -ENOMEM;
     }
     /* bAvailable = TRUE means it has been created */
     gtMutex[cur_mutex_num].bAvailable = FALSE;
     cur_mutex_num++;
-
+    dbg_printf("mutex_create: New mutex created: %d\n", cur_mutex_num);
     enable_interrupts();
     return cur_mutex_num;
 }
@@ -105,6 +106,7 @@ int mutex_unlock(int mutex)
     /* check whether the mutex number is valid */
     if (mutex < 0 || (mutex >= OS_NUM_MUTEX - 1) ||
         ((cur_mutex = &(gtMutex[mutex])) && cur_mutex->bAvailable)) {
+        //printf("mutex_unlock: gonna fire EINVAL\n");    
         enable_interrupts();
         return -EINVAL;
     }
