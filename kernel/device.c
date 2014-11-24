@@ -8,7 +8,6 @@
 
 #include <types.h>
 #include <assert.h>
-
 #include <task.h>
 #include <sched.h>
 #include <device.h>
@@ -68,6 +67,7 @@ void dev_init(void)
  */
 void dev_wait(unsigned int dev)
 {
+    dbg_printf("dev_wait(%d): entering\n", dev);
     disable_interrupts();
 
     dev_t *devc = &(devices[dev]);
@@ -76,10 +76,11 @@ void dev_wait(unsigned int dev)
     /* insert into the first place */
     cur_tcb->sleep_queue = devc->sleep_queue;
     devc->sleep_queue = cur_tcb;
+    dbg_printf("dev_wait: adding prio %d to device %d\n", cur_tcb->cur_prio, dev);
 
+    enable_interrupts();
     /* let current task sleep */
     dispatch_sleep();
-    enable_interrupts();
 }
 
 
@@ -92,6 +93,7 @@ void dev_wait(unsigned int dev)
  */
 void dev_update(unsigned long millis)
 {
+    dbg_printf("dev_update: entering\n");
     /*
      * determine which device should be updated
      * if the event of a device has accured, do
@@ -108,6 +110,7 @@ void dev_update(unsigned long millis)
     for (i = 0; i < NUM_DEVICES; i++) {
         device = &(devices[i]);
         if (device->next_match <= millis) {
+            dbg_printf("dev_update: %d device matches\n", i);
             /* step 1 */
             tcb_iterator = device->sleep_queue;
             while (tcb_iterator != NULL) {
@@ -117,12 +120,15 @@ void dev_update(unsigned long millis)
                 tcb_iterator = tcb_iterator->sleep_queue;
                 tmp_tcb->sleep_queue = NULL;
             }
-            device->next_match += dev_freq[i];
+            device->sleep_queue = NULL;
+            dbg_printf("dev_update: finish adding tasks waiting for %d device \n", i);
             /* step 2 */
+            device->next_match += dev_freq[i];
         }
     }
 
     if (need_ctx) {
+        dbg_printf("dev_update: need_ctx, calling dispatch_save\n");
         dispatch_save();
     }
     enable_interrupts();

@@ -35,7 +35,7 @@
 #define OS_NUM_MUTEX	32
 
 
-#define DEBUG
+//#define DEBUG
 #ifdef DEBUG
 # define dbg_printf(...) printf(__VA_ARGS__)
 #else

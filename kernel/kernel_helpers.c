@@ -46,12 +46,12 @@ void C_IRQ_handler(void) {
         /* write 1 to this bit to acknowledge the match and clear it */
         reg_set(OSTMR_OSSR_ADDR, OSTMR_OSSR_M0);
         update_timer(TIMER_0, MILLIS_IN_MINUTE);
+        dev_update(time_syscall());
     } else if (reg_read(INT_ICPR_ADDR) & (1 << INT_OSTMR_1)) {
         if (VERBOSE)
             puts("C_IRQ_handler: OSTMR_1\n");
         /* write 1 to this bit to acknowledge the match and clear it */
         reg_set(OSTMR_OSSR_ADDR, OSTMR_OSSR_M1);
-        dev_update(time_syscall());
     }
 
 //    printf("C_IRQ_handler: exiting\n");
@@ -88,6 +88,11 @@ void swi_dispatch(unsigned int swi_number, struct ex_context* c) {
             c->r0 = task_create((task_t *)c->r0, (size_t)c->r1);
             break;
         case EVENT_WAIT:
+            dbg_printf("event_wait (%x) = %x\n", (int *)c - 2, *(((int *)c) -2));
+            dbg_printf("event_wait (%x) = %x\n", (int *)c - 1, *(((int *)c) -1));
+            dbg_printf("event_wait (%x) = %d\n", &c->r0, c->r0);
+            dbg_printf("event_wait (%x) = %d\n", &c->r1, c->r1);
+            dbg_printf("event_wait (%x) = %d\n", &c->r2, c->r2);
             event_wait((unsigned int)c->r0);
             break;
         default:
@@ -155,4 +160,8 @@ void init_swi(void) {
     if (wiring_handler(EX_SWI, swi_handler) < 0) {
         printf("The instruction in the vector table is unrecognized\n");
     }
+}
+
+void p_r0(int r0) {
+    dbg_printf("[r0] = %d\n", r0);
 }

@@ -52,9 +52,10 @@ void dispatch_save(void)
     if (task_to_switch != cur_tcb) {
         old_tcb = cur_tcb;
         cur_tcb = task_to_switch;
-        dbg_printf("dispatch_save: full switching from %d to %d\n",
+        dbg_printf("\n--\ndispatch_save: full switching from %d to %d\n",
                 old_tcb->cur_prio, task_to_switch->cur_prio);
         ctx_switch_full(&(task_to_switch->context), &(old_tcb->context));
+        dbg_printf("\tdispatch_save: returning from ctx_switch_full!!\n");
     }
     dbg_printf("dispatch_save: exiting\n");
 }
@@ -91,13 +92,13 @@ void dispatch_sleep(void)
 {
 	// by Ming
 	// Unsure: Need to disinterputs?
-    dbg_printf("About to dispatch sleep, cur highest is %d\n", highest_prio());
 	tcb_t *task_to_switch = runqueue_remove(highest_prio());
 	tcb_t *tmp = cur_tcb;
 	cur_tcb = task_to_switch;
-    dbg_printf("Next task is %d\n", task_to_switch->cur_prio);
-	//runqueue_add(tmp, tmp->native_prio);
-	ctx_switch_full(&(task_to_switch->context), &(tmp->context));
+    //runqueue_add(tmp, tmp->native_prio);
+    dbg_printf("\n--\ndispatch_sleep: full switching from %d to %d\n",
+            tmp->cur_prio, task_to_switch->cur_prio);
+    ctx_switch_full(&(task_to_switch->context), &(tmp->context));
 }
 
 /**

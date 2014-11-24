@@ -36,8 +36,14 @@ FUNC(swi_handler)
 	ldr	r0, [lr,#-4]
 	bic	r0, r0, #0xff000000
 
+    stmfd sp, {sp, lr}^
+    add   sp, sp, #-8
+
 	@ call swi_dispatch
 	bl	swi_dispatch
+
+    ldmfd sp, {sp, lr}^
+    add   sp, sp, #8
 
 	@ restore spsr
 	ldr	r2, [sp, #14*4]
@@ -72,14 +78,14 @@ FUNC(irq_handler)
 	/* Switch to supervisor mode */
 	msr      cpsr_c, #(PSR_MODE_SVC | PSR_IRQ)
 
-	/* Diq the spsr_svc because svc-mode (SWI) entry code saves it with IRQ 
-	 * disabled.  I feel so dirty doing this.  
+	/* Diq the spsr_svc because svc-mode (SWI) entry code saves it with IRQ
+	 * disabled.  I feel so dirty doing this.
 	 * We need to diq spsr because we need atomic reload of pc and cpsr
 	 * during the return sequence in case we came in from user mode.
 	 */
 	msr      spsr, r0
 
-	/* Save lr, pop of r0, r1 from irq stack, and then put them all on the 
+	/* Save lr, pop of r0, r1 from irq stack, and then put them all on the
 	 * svc stack along with other caller-save registers.
 	 * The stack will look like:
 	 * {r0-r3, r8, ip, lr, pc} of source
@@ -97,7 +103,7 @@ FUNC(irq_handler)
 	/* Set up r8 correctly with u-boot dispatch table. */
 	ldr      ip, =global_data
 	ldr      r8, [ip]
-	
+
 	/* Call the IRQ handler in C. */
 	bl       C_IRQ_handler
 	@mov      r0, sp

@@ -77,10 +77,9 @@ void runqueue_init(void)
  */
 void runqueue_add(tcb_t* tcb, uint8_t prio)
 {
+    dbg_printf("runqueue_add: adding prio %d\n", prio);
 	uint8_t group_id = prio / NUM_RUN_GROUP;
 	uint8_t bit = prio % NUM_RUN_GROUP;
-	dbg_printf("group_id = %u, bit = %u\n", group_id, bit);
-	dbg_printf("run_bit = %u\n", run_bits[group_id]);
     /* The cooresponding pro bit should not be set already */
 	assert((run_bits[group_id] & (1 << bit)) == 0);
 	assert(run_list[prio] == NULL);
@@ -99,8 +98,9 @@ void runqueue_add(tcb_t* tcb, uint8_t prio)
  *
  * This function needs to be externally synchronized. //TODO
  */
-tcb_t* runqueue_remove(uint8_t prio)	
+tcb_t* runqueue_remove(uint8_t prio)
 {
+    dbg_printf("runqueue_remove: removing prio %d\n", prio);
 	uint8_t group_id = prio / NUM_RUN_GROUP;
 	uint8_t bit = prio % NUM_RUN_GROUP;
 	tcb_t *ret;
@@ -108,7 +108,7 @@ tcb_t* runqueue_remove(uint8_t prio)
     /* The cooresponding pro bit should be set */
 	assert((run_bits[group_id] & (1 << bit)));
 	assert(run_list[prio]);
-	
+
 	CLEAR_BIT(run_bits[group_id], bit);
     if (run_bits[group_id] == 0) {
     	CLEAR_BIT(group_run_bits, group_id);
