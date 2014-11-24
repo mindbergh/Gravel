@@ -39,7 +39,7 @@ switch_user_app:
 	mov 	r2, #0  	@NULL
 	stmfd	sp!, {r2}
 	mov		r2, r0
-build_argv:	
+build_argv:
 	subs 	r2, r2, #1	@argc-1 as index
 	blt		load_usr
 	@iterate thru all ARGVs
@@ -48,7 +48,7 @@ build_argv:
 	b		build_argv
 load_usr:
 	stmfd 	sp!, {r0}	@argc
-	ldr 	pc, =USR_START_ADDR 
+	ldr 	pc, =USR_START_ADDR
 
 	.global back_to_kernel
 	.type back_to_kernel, %function
