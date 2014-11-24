@@ -62,6 +62,7 @@ void C_IRQ_handler(void) {
  * Return the return value of the syscall.
  */
 void swi_dispatch(unsigned int swi_number, struct ex_context* c) {
+    dbg_printf("entering C_SWI_handler with swi # = %x\n", swi_number);
     if (VERBOSE)
         printf("entering C_SWI_handler with swi # = %x\n", swi_number);
     switch (swi_number) {

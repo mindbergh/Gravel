@@ -34,7 +34,9 @@ void dispatch_init(tcb_t* idle __attribute__((unused)))
     idle->context.r4 = (uint32_t)idle;
     idle->context.r5 = (uint32_t)NULL;
     idle->context.r6 = (uint32_t)NULL;
-    idle->context.lr = launch_task;
+    idle->context.r8 = (uint32_t)global_data;
+    idle->context.lr = (void *)launch_task;
+    idle->context.sp = (void *)(idle->kstack_high);
 
     idle->holds_lock = 0;
     idle->sleep_queue = NULL;
@@ -85,6 +87,11 @@ void dispatch_nosave(void)
 	cur_tcb = task_to_switch;
     dbg_printf("dispatch_nosave: half switching to %d\n",
             task_to_switch->cur_prio);
+    dbg_printf("r4 = %x\n", task_to_switch->context.r4);
+    dbg_printf("r5 = %x\n", task_to_switch->context.r5);
+    dbg_printf("r6 = %x\n", task_to_switch->context.r6);
+    dbg_printf("lr = %x\n", task_to_switch->context.lr);
+    dbg_printf("launch_task = %x\n", launch_task);
 	ctx_switch_half(&(task_to_switch->context));
 }
 

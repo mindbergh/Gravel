@@ -78,7 +78,9 @@ void allocate_tasks(task_t** tasks, size_t num_tasks)
         system_tcb[i].context.r4 = (uint32_t)tasks[i]->lambda;
         system_tcb[i].context.r5 = (uint32_t)tasks[i]->data;
         system_tcb[i].context.r6 = (uint32_t)tasks[i]->stack_pos;
-        system_tcb[i].context.lr = launch_task;
+        system_tcb[i].context.r8 = (uint32_t)global_data;
+        system_tcb[i].context.lr = (void *)launch_task;
+        system_tcb[i].context.sp = (void *)(system_tcb[i].kstack_high);
 
         system_tcb[i].holds_lock = 0;
         system_tcb[i].sleep_queue = NULL;
