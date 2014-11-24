@@ -28,6 +28,7 @@ static __attribute__((unused)) tcb_t* cur_tcb; /* use this if needed */
  */
 void dispatch_init(tcb_t* idle __attribute__((unused)))
 {
+    dbg_printf("dispatch_init: entering\n");
     idle->native_prio = IDLE_PRIO;
     idle->cur_prio = IDLE_PRIO;
     idle->context.r4 = (uint32_t)idle;
@@ -39,6 +40,7 @@ void dispatch_init(tcb_t* idle __attribute__((unused)))
     idle->sleep_queue = NULL;
     // TODO smae problem for kstack here
     //
+    dbg_printf("dispatch_init: adding idle to runqueue\n");
     runqueue_add(idle, idle->native_prio);
 }
 
@@ -53,16 +55,21 @@ void dispatch_init(tcb_t* idle __attribute__((unused)))
  */
 void dispatch_save(void)
 {
+    dbg_printf("dispatch_save: entering\n");
 	// by Ming
 	// Unsure: Need to disinterputs?
 	tcb_t *old_tcb;
+    dbg_printf("dispatch_save: adding current tcb to runqueue\n");
 	runqueue_add(cur_tcb, cur_tcb->native_prio);
 	tcb_t *task_to_switch = runqueue_remove(highest_prio());
     if (task_to_switch != cur_tcb) {
         old_tcb = cur_tcb;
         cur_tcb = task_to_switch;
+        dbg_printf("dispatch_save: full switching from %d to %d\n",
+                old_tcb->cur_prio, task_to_switch->cur_prio);
         ctx_switch_full(&(task_to_switch->context), &(old_tcb->context));
     }
+    dbg_printf("dispatch_save: exiting\n");
 }
 
 /**
@@ -73,8 +80,11 @@ void dispatch_save(void)
  */
 void dispatch_nosave(void)
 {
+    dbg_printf("dispatch_nosave: entering\n");
 	tcb_t *task_to_switch = runqueue_remove(highest_prio());
 	cur_tcb = task_to_switch;
+    dbg_printf("dispatch_nosave: half switching to %d\n",
+            task_to_switch->cur_prio);
 	ctx_switch_half(&(task_to_switch->context));
 }
 

@@ -24,6 +24,7 @@
 
 int task_create(task_t* tasks  __attribute__((unused)), size_t num_tasks  __attribute__((unused)))
 {
+    dbg_printf("task_create: entering, num_tasks = %ld\n", num_tasks);
     //Warning: Don’t assume that user code will be sane
     //
     //Inside the task_create syscall, your code will look at the
@@ -39,11 +40,13 @@ int task_create(task_t* tasks  __attribute__((unused)), size_t num_tasks  __attr
      * for idle task.
     */
     if (num_tasks > OS_AVAIL_TASKS) {
+        dbg_printf("task_create: num_tasks is invalid\n");
         return -EINVAL;
     }
     /* Tasks points to region whose bounds lie outside valid address space. */
     if (!valid_addr(tasks, num_tasks * sizeof(task_t),
                 USR_START_ADDR, USR_END_ADDR)) {
+        dbg_printf("task_create: invalid addr\n");
         return -EFAULT;
     }
     /* declare an array of pointers such that it is sortable */
@@ -54,6 +57,7 @@ int task_create(task_t* tasks  __attribute__((unused)), size_t num_tasks  __attr
 
     /* The given task set is not schedulable. */
     if (!assign_schedule(tasks_ptr_arr, num_tasks)) {
+        dbg_printf("task_create: task set is not schedulable\n");
         free(tasks_ptr_arr);
         return -ESCHED;
     }
@@ -70,8 +74,6 @@ int task_create(task_t* tasks  __attribute__((unused)), size_t num_tasks  __attr
      */
 
     sched_init(NULL);
-
-
 
     /* should never return */
     return 1;

@@ -29,6 +29,8 @@
  */
 int assign_schedule(task_t** tasks, size_t num_tasks)
 {
+    dbg_printf("assign_schedule: entering, num_tasks = %ld\n", num_tasks);
+
     int i, j;
     float utilization = 0;
     task_t *tmp_task;
@@ -41,6 +43,7 @@ int assign_schedule(task_t** tasks, size_t num_tasks)
         return 0;
     }
 
+    dbg_printf("assign_schedule: sorting\n");
     /* sort the tasks according its rate*/
     for (i = num_tasks - 1; i >= 0; i--) {
         for (j = i - 1; j >= 0; j--) {
@@ -51,6 +54,7 @@ int assign_schedule(task_t** tasks, size_t num_tasks)
             }
         }
     }
+    dbg_printf("assign_schedule: exiting\n");
 	return 1;
 }
 
