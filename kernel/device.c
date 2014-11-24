@@ -72,14 +72,15 @@ void dev_wait(unsigned int dev)
 
     dev_t *devc = &(devices[dev]);
     tcb_t *cur_tcb = get_cur_tcb();
-
+    dbg_printf("dev_wait: %u call wait for %u\n", cur_tcb->cur_prio, dev);
     /* insert into the first place */
     cur_tcb->sleep_queue = devc->sleep_queue;
     devc->sleep_queue = cur_tcb;
 
     /* let current task sleep */
-    dispatch_sleep();
     enable_interrupts();
+    dispatch_sleep();
+    
 }
 
 
@@ -103,12 +104,15 @@ void dev_update(unsigned long millis)
     dev_t *device;
     tcb_t *tcb_iterator, *tmp_tcb;
 
+    dbg_printf("dev_update: Entering\n");
+
     disable_interrupts();
 
     for (i = 0; i < NUM_DEVICES; i++) {
         device = &(devices[i]);
         if (device->next_match <= millis) {
             /* step 1 */
+            dbg_printf("dev_update: dev %d match!\n", i);
             tcb_iterator = device->sleep_queue;
             while (tcb_iterator != NULL) {
                 need_ctx = TRUE;
@@ -117,11 +121,12 @@ void dev_update(unsigned long millis)
                 tcb_iterator = tcb_iterator->sleep_queue;
                 tmp_tcb->sleep_queue = NULL;
             }
-            device->next_match += dev_freq[i];
+            device->next_match += dev_freq[i];  
             /* step 2 */
         }
     }
 
+    dbg_printf("dev_update: Exiting\n");
     if (need_ctx) {
         dispatch_save();
     }

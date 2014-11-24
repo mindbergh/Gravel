@@ -91,11 +91,11 @@ void dispatch_sleep(void)
 {
 	// by Ming
 	// Unsure: Need to disinterputs?
-    dbg_printf("About to dispatch sleep, cur highest is %d\n", highest_prio());
+    dbg_printf("dispatch_sleep: About to dispatch sleep, cur highest is %d\n", highest_prio());
 	tcb_t *task_to_switch = runqueue_remove(highest_prio());
 	tcb_t *tmp = cur_tcb;
 	cur_tcb = task_to_switch;
-    dbg_printf("Next task is %d\n", task_to_switch->cur_prio);
+    dbg_printf("dispatch_sleep: Next task is %d\n", task_to_switch->cur_prio);
 	//runqueue_add(tmp, tmp->native_prio);
 	ctx_switch_full(&(task_to_switch->context), &(tmp->context));
 }

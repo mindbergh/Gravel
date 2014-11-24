@@ -34,9 +34,7 @@ unsigned instruction_backup[NUM_EXCEPTIONS - 1][2];
  * do corresponding task
  */
 void C_IRQ_handler(void) {
-    if (VERBOSE)
-        printf("C_IRQ_handler: entering\n");
-
+    //dbg_printf("C_IRQ_handler: entering\n");
     /* find out if the timer cause this interrupt */
     if (reg_read(INT_ICPR_ADDR) & (1 << INT_OSTMR_0)) {
         //puts("C_IRQ_handler: OSTMR_0\n");
@@ -46,12 +44,14 @@ void C_IRQ_handler(void) {
         /* write 1 to this bit to acknowledge the match and clear it */
         reg_set(OSTMR_OSSR_ADDR, OSTMR_OSSR_M0);
         update_timer(TIMER_0, MILLIS_IN_MINUTE);
+        dev_update(time_syscall());
     } else if (reg_read(INT_ICPR_ADDR) & (1 << INT_OSTMR_1)) {
         if (VERBOSE)
             puts("C_IRQ_handler: OSTMR_1\n");
         /* write 1 to this bit to acknowledge the match and clear it */
         reg_set(OSTMR_OSSR_ADDR, OSTMR_OSSR_M1);
-        dev_update(time_syscall());
+        dbg_printf("C_IRQ_handler: about to dev_update\n");
+        
     }
 
 //    printf("C_IRQ_handler: exiting\n");
@@ -62,7 +62,7 @@ void C_IRQ_handler(void) {
  * Return the return value of the syscall.
  */
 void swi_dispatch(unsigned int swi_number, struct ex_context* c) {
-    dbg_printf("entering C_SWI_handler with swi # = %x\n", swi_number);
+    dbg_printf("entering C_SWI_handler with swi # = %x, r0 = %u\n", swi_number, c->r0);
     if (VERBOSE)
         printf("entering C_SWI_handler with swi # = %x\n", swi_number);
     switch (swi_number) {
