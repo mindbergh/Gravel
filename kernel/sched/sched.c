@@ -22,13 +22,10 @@ tcb_t system_tcb[OS_MAX_TASKS]; /*allocate memory for system TCBs */
 
 void sched_init(task_t* main_task  __attribute__((unused)))
 {
-    /* commented by Mike
-	task_t *idle_task = (task_t*)malloc(sizeof(task_t));
-	memset(idle_task, 0, sizeof(task_t));
-	idle_task->lambda = idle;
-    */
-
-
+    /*
+     * I don't understand why we need main_task
+     */
+    dispatch_nosave();
 }
 
 /**
@@ -75,6 +72,7 @@ void allocate_tasks(task_t** tasks  __attribute__((unused)), size_t num_tasks  _
         system_tcb[i].context.r4 = (uint32_t)tasks[i]->lambda;
         system_tcb[i].context.r5 = (uint32_t)tasks[i]->data;
         system_tcb[i].context.r6 = (uint32_t)tasks[i]->stack_pos;
+        system_tcb[i].context.lr = launch_task;
 
         system_tcb[i].holds_lock = 0;
         system_tcb[i].sleep_queue = NULL;
@@ -86,19 +84,7 @@ void allocate_tasks(task_t** tasks  __attribute__((unused)), size_t num_tasks  _
         runqueue_add(&(system_tcb[i]), i);
     }
 
-
-
     /* setup for the idle */
-    system_tcb[IDLE_PRIO].native_prio = IDLE_PRIO;
-    system_tcb[IDLE_PRIO].cur_prio = IDLE_PRIO;
-    system_tcb[IDLE_PRIO].context.r4 = (uint32_t)idle;
-    system_tcb[IDLE_PRIO].context.r5 = (uint32_t)NULL;
-    system_tcb[IDLE_PRIO].context.r6 = (uint32_t)NULL;
-
-    system_tcb[IDLE_PRIO].holds_lock = 0;
-    system_tcb[IDLE_PRIO].sleep_queue = NULL;
-    // TODO smae problem for kstack here
-
-    runqueue_add(&(system_tcb[IDLE_PRIO]), IDLE_PRIO);
+    dispatch_init(&(system_tcb[IDLE_PRIO]));
 }
 

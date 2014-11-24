@@ -2,12 +2,12 @@
  *
  * @brief kernel main
  *
- * @author 
- *	   
- *	   
- * @date   
+ * @author
+ *
+ *
+ * @date
  */
- 
+
 #include <kernel.h>
 #include <task.h>
 #include <sched.h>
@@ -41,12 +41,13 @@ int kmain(int argc __attribute__((unused)), char** argv  __attribute__((unused))
     init_interrupt();
     init_swi();
     init_timer();
+    mutex_init();
 
     if (VERBOSE) {
     	printf("Kernel Successfully Initialized!\n");
     }
-	return switch_user_app(argc, argv);	
+	return switch_user_app(argc, argv);
 
-		
+
 	assert(0);        /* should never get here */
 }
