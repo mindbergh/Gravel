@@ -2,8 +2,9 @@
  *
  * @brief C wrappers around assembly context switch routines.
  *
- * @author Kartik Subramanian <ksubrama@andrew.cmu.edu>
- * @date 2008-11-21
+ * @ Author: Ming Fang <mingf@andrew.cmu.edu>
+ * @ Author: Hsueh-Hung Cheng <hsuehhuc@andrew.cmu.edu>
+ * @ date 2014-11-24
  */
 
 
@@ -43,8 +44,6 @@ void dispatch_init(tcb_t* idle __attribute__((unused)))
 void dispatch_save(void)
 {
     dbg_printf("dispatch_save: entering\n");
-	// by Ming
-	// Unsure: Need to disinterputs?
 	tcb_t *old_tcb;
     dbg_printf("dispatch_save: adding current tcb to runqueue\n");
 	runqueue_add(cur_tcb, cur_tcb->native_prio);
@@ -90,12 +89,9 @@ void dispatch_nosave(void)
  */
 void dispatch_sleep(void)
 {
-	// by Ming
-	// Unsure: Need to disinterputs?
 	tcb_t *task_to_switch = runqueue_remove(highest_prio());
 	tcb_t *tmp = cur_tcb;
 	cur_tcb = task_to_switch;
-    //runqueue_add(tmp, tmp->native_prio);
     dbg_printf("\n--\ndispatch_sleep: full switching from %d to %d\n",
             tmp->cur_prio, task_to_switch->cur_prio);
     ctx_switch_full(&(task_to_switch->context), &(tmp->context));

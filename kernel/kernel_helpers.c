@@ -34,11 +34,9 @@ unsigned instruction_backup[NUM_EXCEPTIONS - 1][2];
  * do corresponding task
  */
 void C_IRQ_handler(void) {
-    //dbg_printf("C_IRQ_handler: entering\n");
+    dbg_printf("C_IRQ_handler: entering\n");
     /* find out if the timer cause this interrupt */
     if (reg_read(INT_ICPR_ADDR) & (1 << INT_OSTMR_0)) {
-        //puts("C_IRQ_handler: OSTMR_0\n");
-        //printf("ICMR_0 caused this interupt\n");
         sys_time++;
         last_clock = reg_read(OSTMR_OSCR_ADDR);
         /* write 1 to this bit to acknowledge the match and clear it */
@@ -89,17 +87,11 @@ void swi_dispatch(unsigned int swi_number, struct ex_context* c) {
             c->r0 = task_create((task_t *)c->r0, (size_t)c->r1);
             break;
         case EVENT_WAIT:
-            dbg_printf("event_wait (%x) = %x\n", (int *)c - 2, *(((int *)c) -2));
-            dbg_printf("event_wait (%x) = %x\n", (int *)c - 1, *(((int *)c) -1));
-            dbg_printf("event_wait (%x) = %d\n", &c->r0, c->r0);
-            dbg_printf("event_wait (%x) = %d\n", &c->r1, c->r1);
-            dbg_printf("event_wait (%x) = %d\n", &c->r2, c->r2);
             c->r0 = event_wait((unsigned int)c->r0);
             break;
         default:
             invalid_syscall(swi_number);
     }
-    //printf("swi_dispatch: return: %d\n", c->r0);
 }
 
 
@@ -107,7 +99,7 @@ void swi_dispatch(unsigned int swi_number, struct ex_context* c) {
  * wrie in our own handler given the vecotr
  */
 int wiring_handler(unsigned vec_num, void *handler_addr) {
-//    printf("entering wiring_handler with vec_num = %x\n", vec_num);
+    dbg_printf("entering wiring_handler with vec_num = %x\n", vec_num);
     unsigned *vector_addr = (unsigned *)(vec_num * 0x4);
     /*
      * check SWI vector contains the valid format:
@@ -132,7 +124,6 @@ int wiring_handler(unsigned vec_num, void *handler_addr) {
     *(uboot_handler_addr[vec_num]) = 0xe51ff004;       // pc, [pc, #-4]
     *(uboot_handler_addr[vec_num] + 1) = (unsigned int)handler_addr;
 
-//    printf("exiting wiring handler\n");
     return 1;
 }
 
@@ -162,8 +153,4 @@ void init_swi(void) {
     if (wiring_handler(EX_SWI, swi_handler) < 0) {
         printf("The instruction in the vector table is unrecognized\n");
     }
-}
-
-void p_r0(int r0) {
-    dbg_printf("[r0] = %d\n", r0);
 }

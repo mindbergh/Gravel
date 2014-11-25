@@ -2,8 +2,9 @@
  *
  * @brief Top level implementation of the scheduler.
  *
- * @author Kartik Subramanian <ksubrama@andrew.cmu.edu>
- * @date 2008-11-20
+ * @ Author: Ming Fang <mingf@andrew.cmu.edu>
+ * @ Author: Hsueh-Hung Cheng <hsuehhuc@andrew.cmu.edu>
+ * @ date 2014-11-24
  */
 
 #include <types.h>
@@ -66,14 +67,13 @@ void allocate_tasks(task_t** tasks, size_t num_tasks)
     /* initialization of tcb */
     dbg_printf("allocate_tasks: initializing tcbs\n");
     for (i = num_tasks - 1; i >= 0; i--) {
-        ctx = &system_tcb[i].context; 
+        ctx = &system_tcb[i].context;
         system_tcb[i].native_prio = i;
         system_tcb[i].cur_prio = i;
 
         /*
          * r4 = pc, r5 = first argument, r6 = sp
          * for detail, please check launch_task(void)
-         * TODO should we initialize other registers in the context?
          */
 
         ctx->r4 = (uint32_t)tasks[i]->lambda;
@@ -82,12 +82,9 @@ void allocate_tasks(task_t** tasks, size_t num_tasks)
         ctx->r8 = (uint32_t)global_data;
         ctx->sp = (void *)system_tcb[i].kstack_high;
         ctx->lr = (void *)launch_task;
-    
+
         system_tcb[i].holds_lock = 0;
         system_tcb[i].sleep_queue = NULL;
-
-        // TODO I don't understand the purpose of kstatck
-        // system_tcb[i].kstack = ??;
 
         /* setup the runqueue */
         runqueue_add(&(system_tcb[i]), i);
@@ -113,6 +110,5 @@ void allocate_tasks(task_t** tasks, size_t num_tasks)
     runqueue_add(&(system_tcb[IDLE_PRIO]), IDLE_PRIO);
     /* setup for the idle */
     dbg_printf("allocate_tasks: calling dispatch_init\n");
-    //dispatch_init(&(system_tcb[IDLE_PRIO]));
 }
 

@@ -1,9 +1,11 @@
 /**
- * @file device.c
+ * @ file device.c
  *
- * @brief Implements simulated devices.
- * @author Kartik Subramanian <ksubrama@andrew.cmu.edu>
- * @date 2008-12-01
+ * @ brief Implements simulated devices.
+ *
+ * @ Author: Ming Fang <mingf@andrew.cmu.edu>
+ * @ Author: Hsueh-Hung Cheng <hsuehhuc@andrew.cmu.edu>
+ * @ date 2014-11-24
  */
 
 #include <types.h>

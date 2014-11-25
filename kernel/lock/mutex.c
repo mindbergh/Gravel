@@ -1,12 +1,11 @@
 /**
- * @file mutex.c
+ * @ file mutex.c
  *
- * @brief Implements mutices.
+ * @ brief Implements mutices.
  *
- * @author Harry Q Bovik < PUT YOUR NAMES HERE
- *
- *
- * @date
+ * @ Author: Ming Fang <mingf@andrew.cmu.edu>
+ * @ Author: Hsueh-Hung Cheng <hsuehhuc@andrew.cmu.edu>
+ * @ date 2014-11-24
  */
 
 //#define DEBUG_MUTEX
@@ -106,7 +105,7 @@ int mutex_unlock(int mutex)
     /* check whether the mutex number is valid */
     if (mutex < 0 || (mutex >= OS_NUM_MUTEX) ||
         ((cur_mutex = &(gtMutex[mutex])) && cur_mutex->bAvailable)) {
-        //printf("mutex_unlock: gonna fire EINVAL\n");    
+        //printf("mutex_unlock: gonna fire EINVAL\n");
         enable_interrupts();
         return -EINVAL;
     }
