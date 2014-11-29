@@ -27,8 +27,9 @@
 
 /* OS_MAX_TASKS must be atleast 8 and must be atmost 64 */
 #define IDLE_PRIO             63
+#define HIGHEST_PRIO          0
 #define OS_MAX_TASKS          64
-#define OS_AVAIL_TASKS        63
+#define OS_AVAIL_TASKS        62  // one for idle and one for highest
 #define NUM_RUN_GROUP          8
 
 /* OS_NUM_MUTEX must be at lease 32 */

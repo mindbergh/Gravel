@@ -81,6 +81,10 @@ int task_create(task_t* tasks, size_t num_tasks)
 
 int event_wait(unsigned int dev  __attribute__((unused)))
 {
+    tcb_t *cur_tcb = get_cur_tcb();
+    if (cur_tcb->holds_lock) {
+        return -EHOLDSLOCK;
+    }
     if (dev >= NUM_DEVICES) {
         return -EINVAL;
     } else {

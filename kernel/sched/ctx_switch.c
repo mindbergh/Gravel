@@ -44,11 +44,12 @@ void dispatch_init(tcb_t* idle __attribute__((unused)))
 void dispatch_save(void)
 {
     dbg_printf("dispatch_save: entering\n");
-	tcb_t *old_tcb;
-    dbg_printf("dispatch_save: adding current tcb to runqueue\n");
-	runqueue_add(cur_tcb, cur_tcb->native_prio);
-	tcb_t *task_to_switch = runqueue_remove(highest_prio());
-    if (task_to_switch != cur_tcb) {
+    if (cur_tcb->cur_prio > highest_prio()) {
+    	tcb_t *old_tcb;
+        dbg_printf("dispatch_save: adding current tcb to runqueue\n");
+    	runqueue_add(cur_tcb, cur_tcb->cur_prio);
+    	tcb_t *task_to_switch = runqueue_remove(highest_prio());
+        
         old_tcb = cur_tcb;
         cur_tcb = task_to_switch;
         dbg_printf("\n--\ndispatch_save: full switching from %d to %d\n",

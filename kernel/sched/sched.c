@@ -58,7 +58,7 @@ static void __attribute__((unused)) idle(void)
 void allocate_tasks(task_t** tasks, size_t num_tasks)
 {
     dbg_printf("allocate_tasks: entering\n");
-    int i;
+    int i, j;
     sched_context_t* ctx;
     /* initialize run queue */
     dbg_printf("allocate_tasks: calling runqueue_init\n");
@@ -66,7 +66,8 @@ void allocate_tasks(task_t** tasks, size_t num_tasks)
 
     /* initialization of tcb */
     dbg_printf("allocate_tasks: initializing tcbs\n");
-    for (i = num_tasks - 1; i >= 0; i--) {
+    for (j = num_tasks - 1; j >= 0; j--) {
+        i = j + 1; // shift one to leave room for the highest prio 0.
         ctx = &system_tcb[i].context;
         system_tcb[i].native_prio = i;
         system_tcb[i].cur_prio = i;

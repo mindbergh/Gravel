@@ -90,6 +90,7 @@ int mutex_lock(int mutex  __attribute__((unused)))
     }
     cur_mutex->pHolding_Tcb = cur_tcb;
     cur_tcb->holds_lock++;
+    cur_tcb->cur_prio = HIGHEST_PRIO;  // Highest Locker Protocol
 
     enable_interrupts();
 	return 0;
@@ -130,6 +131,9 @@ int mutex_unlock(int mutex)
     /* task_to_waken could be NULL or other tcb */
     cur_mutex->pHolding_Tcb = task_to_waken;
     cur_tcb->holds_lock--;
+    if (cur_tcb->holds_lock == 0) {
+        cur_tcb->cur_prio = cur_tcb->native_prio;
+    }
 
     enable_interrupts();
 	return 0;

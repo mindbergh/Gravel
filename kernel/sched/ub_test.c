@@ -42,19 +42,9 @@ int assign_schedule(task_t** tasks, size_t num_tasks)
     dbg_printf("assign_schedule: entering, num_tasks = %ld\n", num_tasks);
 
     int i, j;
-    float utilization = 0;
+    float utilization = 0.0;
     float this_util = 0.0;
     task_t *tmp_task;
-    for (i = num_tasks - 1; i >= 0; i--) {
-        tmp_task = tasks[i];
-        this_util = ((float)tmp_task->C / tmp_task->T);
-        dbg_printf("C = %ld, T = %ld, This util is: %x\n",tmp_task->C, tmp_task->T, this_util);
-        utilization += this_util;
-    }
-    dbg_printf("Sum util = %x\n", utilization);
-    if (utilization > bound_table[num_tasks]) {
-        return 0;
-    }
 
     dbg_printf("assign_schedule: sorting\n");
     /* sort the tasks according its rate*/
@@ -67,7 +57,23 @@ int assign_schedule(task_t** tasks, size_t num_tasks)
             }
         }
     }
-    dbg_printf("assign_schedule: exiting\n");
+
+    for (i = 0; i < num_tasks; i++) {
+        tmp_task = tasks[i];
+        this_util = (((float)tmp_task->C + (float)tmp_task->B ) / tmp_task->T);
+        dbg_printf("C = %ld, T = %ld, B = %ld, This util is: %x\n",
+                                                                tmp_task->C,
+                                                                tmp_task->T,
+                                                                tmp_task->B,
+                                                                this_util);
+        if (utilization + this_util > bound_table[i]) {
+            dbg_printf("assign_schedule: exiting, unschedulable\n");
+            return 0;
+        }
+        utilization += ((float)tmp_task->C / tmp_task->T);
+    }
+    
+    dbg_printf("assign_schedule: exiting, schedulable\n");
 	return 1;
 }
 
