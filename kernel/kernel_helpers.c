@@ -37,17 +37,12 @@ void C_IRQ_handler(void) {
     dbg_printf("C_IRQ_handler: entering\n");
     /* find out if the timer cause this interrupt */
     if (reg_read(INT_ICPR_ADDR) & (1 << INT_OSTMR_0)) {
-        sys_time++;
+        sys_time += 1;
         last_clock = reg_read(OSTMR_OSCR_ADDR);
         /* write 1 to this bit to acknowledge the match and clear it */
         reg_set(OSTMR_OSSR_ADDR, OSTMR_OSSR_M0);
         update_timer(TIMER_0, MILLIS_IN_MINUTE);
         dev_update(time_syscall());
-    } else if (reg_read(INT_ICPR_ADDR) & (1 << INT_OSTMR_1)) {
-        if (VERBOSE)
-            puts("C_IRQ_handler: OSTMR_1\n");
-        /* write 1 to this bit to acknowledge the match and clear it */
-        reg_set(OSTMR_OSSR_ADDR, OSTMR_OSSR_M1);
     }
 
 //    printf("C_IRQ_handler: exiting\n");

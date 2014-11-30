@@ -37,7 +37,7 @@
 #define OSTMR_FREQ            3686400      /* Oscillator frequency in hz */
 #define OSTMR_FREQ_KHZ        3686.4       /* Oscillator frequency in Khz */
 #define TIME_RESOLUTION       100
-#define MILLIS_IN_MINUTE      20
+#define MILLIS_IN_MINUTE      30
 
 #define TIMER_0     0
 #define TIMER_1     1

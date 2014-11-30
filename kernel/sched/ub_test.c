@@ -58,7 +58,7 @@ int assign_schedule(task_t** tasks, size_t num_tasks)
         }
     }
 
-    for (i = 0; i < num_tasks; i++) {
+    for (i = 0; i < (int)num_tasks; i++) {
         tmp_task = tasks[i];
         this_util = (((float)tmp_task->C + (float)tmp_task->B ) / tmp_task->T);
         dbg_printf("C = %ld, T = %ld, B = %ld, This util is: %x\n",

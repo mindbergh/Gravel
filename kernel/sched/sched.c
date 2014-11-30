@@ -77,16 +77,16 @@ void allocate_tasks(task_t** tasks, size_t num_tasks)
          * for detail, please check launch_task(void)
          */
 
-        ctx->r4 = (uint32_t)tasks[i]->lambda;
-        ctx->r5 = (uint32_t)tasks[i]->data;
-        ctx->r6 = (uint32_t)tasks[i]->stack_pos;
+        ctx->r4 = (uint32_t)tasks[j]->lambda;
+        ctx->r5 = (uint32_t)tasks[j]->data;
+        ctx->r6 = (uint32_t)tasks[j]->stack_pos;
         ctx->r8 = (uint32_t)global_data;
         ctx->sp = (void *)system_tcb[i].kstack_high;
         ctx->lr = (void *)launch_task;
 
         system_tcb[i].holds_lock = 0;
         system_tcb[i].sleep_queue = NULL;
-
+        //printf("i = %d, data = %d\n", i, (int)tasks[j]->data);
         /* setup the runqueue */
         runqueue_add(&(system_tcb[i]), i);
     }

@@ -19,7 +19,7 @@ uint32_t sys_time;   // system time incremented every 1min
 
 
 
-uint32_t sub(uint32_t this, uint32_t that);
+static inline uint32_t sub(uint32_t this, uint32_t that);
 
 /*
  * Get the time from the os
@@ -105,7 +105,7 @@ void update_timer(int channel, uint32_t millis) {
 /*
  * A underflow free subtraction function for uint32
  */
-uint32_t sub(uint32_t this, uint32_t that) {
+static inline uint32_t sub(uint32_t this, uint32_t that) {
     if (this < that) {
         // overflow occurred
         return ((UINT32_MAX - that) + 1 + this);
