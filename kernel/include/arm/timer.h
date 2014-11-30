@@ -36,20 +36,19 @@
 
 #define OSTMR_FREQ            3686400      /* Oscillator frequency in hz */
 #define OSTMR_FREQ_KHZ        3686.4       /* Oscillator frequency in Khz */
-#define TIME_RESOLUTION       100
-#define MILLIS_IN_MINUTE      30
+#define TIME_RESOLUTION       10
+#define MILLIS_IN_MINUTE      20
 
 #define TIMER_0     0
 #define TIMER_1     1
 
 extern uint32_t last_clock;
-extern uint32_t sys_time;   // system time incremented every 1min
+extern volatile uint32_t sys_time;   // system time incremented every 1min
 
 #ifndef ASSEMBLER
 
 void init_timer(void);
-void update_timer(int channel, uint32_t millis);
-
+inline void update_timer(uint32_t millis);
 
 
 

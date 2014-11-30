@@ -15,11 +15,12 @@
 #include <arm/interrupt.h>
 
 uint32_t last_clock;
-uint32_t sys_time;   // system time incremented every 1min
-
+volatile uint32_t sys_time;   // system time incremented every 1min
+//uint32_t time_in_hz;
 
 
 static inline uint32_t sub(uint32_t this, uint32_t that);
+
 
 /*
  * Get the time from the os
@@ -30,23 +31,7 @@ static inline uint32_t sub(uint32_t this, uint32_t that);
  */
 unsigned long time_syscall(void)
 {
-    uint32_t sec = sys_time;
-    uint32_t this_clock = reg_read(OSTMR_OSCR_ADDR);
-    uint32_t msec;
-    uint32_t res;
-
-
-    msec = sub(this_clock, last_clock) / OSTMR_FREQ_KHZ; // overflow-free sub
-    //printf("systime: %u, msec: %u\n", sys_time, msec);
-
-    if (sys_time > sec) {
-        this_clock = reg_read(OSTMR_OSCR_ADDR);
-        res = sys_time * MILLIS_IN_MINUTE + (sub(this_clock, last_clock) / OSTMR_FREQ_KHZ);
-        return res; 
-    } else {
-        res = sys_time * MILLIS_IN_MINUTE + msec;
-        return res;
-    }
+    return sys_time;
 }
 
 
@@ -57,7 +42,7 @@ unsigned long time_syscall(void)
  *
  * 
  */
-void sleep_syscall(unsigned long millis  __attribute__((unused)))
+void sleep_syscall(unsigned long millis)
 {
 	uint32_t deadline = time_syscall() + millis;
     uint32_t now = time_syscall();
@@ -75,7 +60,7 @@ void init_timer() {
     last_clock = reg_read(OSTMR_OSCR_ADDR);
     if (VERBOSE)
         printf("Entering init timer\n");
-    update_timer(TIMER_0, MILLIS_IN_MINUTE);  // update every second
+    update_timer(TIME_RESOLUTION);  
 
     /* enable channel 0 */
     reg_set(OSTMR_OIER_ADDR, OSTMR_OIER_E0);
@@ -89,16 +74,9 @@ void init_timer() {
 /*
  * Update timer registers for time system call 
  */
-void update_timer(int channel, uint32_t millis) {
-    if (VERBOSE)
-        printf("Entering update timer\n");
-    if (channel == TIMER_0 || channel == TIMER_1) {
-        uint32_t time_in_hz = millis * OSTMR_FREQ_KHZ;
-        uint32_t final_time = reg_read(OSTMR_OSCR_ADDR) + time_in_hz;
-        reg_write(OSTMR_OSMR_ADDR(channel), final_time); // update match reg
-    }
-    if (VERBOSE)
-        printf("Exiting update timer\n");
+inline void update_timer(uint32_t millis) {
+    uint32_t final_time = reg_read(OSTMR_OSCR_ADDR) + millis * OSTMR_FREQ_KHZ;
+    reg_write(OSTMR_OSMR_ADDR(TIMER_0), final_time); // update match reg
 }
 
 

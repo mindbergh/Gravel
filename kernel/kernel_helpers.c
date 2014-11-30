@@ -37,12 +37,12 @@ void C_IRQ_handler(void) {
     dbg_printf("C_IRQ_handler: entering\n");
     /* find out if the timer cause this interrupt */
     if (reg_read(INT_ICPR_ADDR) & (1 << INT_OSTMR_0)) {
-        sys_time += 1;
+        sys_time += TIME_RESOLUTION;
         last_clock = reg_read(OSTMR_OSCR_ADDR);
         /* write 1 to this bit to acknowledge the match and clear it */
         reg_set(OSTMR_OSSR_ADDR, OSTMR_OSSR_M0);
-        update_timer(TIMER_0, MILLIS_IN_MINUTE);
-        dev_update(time_syscall());
+        update_timer(TIME_RESOLUTION);
+        dev_update(sys_time);
     }
 
 //    printf("C_IRQ_handler: exiting\n");
@@ -54,8 +54,6 @@ void C_IRQ_handler(void) {
  */
 void swi_dispatch(unsigned int swi_number, struct ex_context* c) {
     dbg_printf("entering C_SWI_handler with swi # = %x, r0 = %u\n", swi_number, c->r0);
-    if (VERBOSE)
-        printf("entering C_SWI_handler with swi # = %x\n", swi_number);
     switch (swi_number) {
         case READ_SWI:
             c->r0 = read_syscall(c->r0, (char *)c->r1, c->r2);
