@@ -111,6 +111,9 @@ int main(int argc, char** argv)
 	tasks[2].stack_pos = (void*)0xa1200000;
 	tasks[2].C = 1;
 	tasks[2].T = PERIOD_DEV2;
+	tasks[0].B = 0;
+	tasks[1].B = 0;
+	tasks[2].B = 0;
 	task_create(tasks, 3);
 	// just to get rid of compiler...
 	argc = argc;

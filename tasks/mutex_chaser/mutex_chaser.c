@@ -185,7 +185,10 @@ int main(int argc, char** argv)
 	tasks[3].stack_pos = (void*)0xa2500000;
 	tasks[3].C = 1;
 	tasks[3].T = PERIOD_DEV3;
-
+    tasks[0].B = 0;
+    tasks[1].B = 0;
+    tasks[2].B = 0;
+    tasks[3].B = 0;
 	task_create(tasks, 4);
 	argc = argc ;
 	argv = argv ;
