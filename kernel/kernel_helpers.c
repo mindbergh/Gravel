@@ -1,9 +1,9 @@
 /*
  * kernel_helpers.c: other kernel functions
  *
- * Author: Hsueh-Hung Cheng <xuehung@gmail.com>
- * Author: Ming Fang <mingf@cs.cmu.edu>
- * Date:   10/20/2014 14:38
+ * @author Ming Fang <mingf@andrew.cmu.edu>
+ * @author Hsueh-Hung Cheng <hsuehhuc@andrew.cmu.edu>
+ * @date 2014-12-4
  */
 
 #include <exports.h>
@@ -38,7 +38,6 @@ void C_IRQ_handler(void) {
     /* find out if the timer cause this interrupt */
     if (reg_read(INT_ICPR_ADDR) & (1 << INT_OSTMR_0)) {
         sys_time += TIME_RESOLUTION;
-        last_clock = reg_read(OSTMR_OSCR_ADDR);
         /* write 1 to this bit to acknowledge the match and clear it */
         reg_set(OSTMR_OSSR_ADDR, OSTMR_OSSR_M0);
         update_timer(TIME_RESOLUTION);

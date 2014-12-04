@@ -8,6 +8,10 @@
  *
  * @author Kartik Subramanian <ksubrama@andrew.cmu.edu>
  * @date 2008-08-07
+ *
+ * @author Ming Fang <mingf@andrew.cmu.edu>
+ * @author Hsueh-Hung Cheng <hsuehhuc@andrew.cmu.edu>
+ * @date 2014-12-4
  */
 
 #include <types.h>

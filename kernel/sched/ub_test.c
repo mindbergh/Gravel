@@ -2,9 +2,9 @@
  *
  * @brief The UB Test for basic schedulability
  *
- * @ Author: Ming Fang <mingf@andrew.cmu.edu>
- * @ Author: Hsueh-Hung Cheng <hsuehhuc@andrew.cmu.edu>
- * @ date 2014-11-24
+ * @author Ming Fang <mingf@andrew.cmu.edu>
+ * @author Hsueh-Hung Cheng <hsuehhuc@andrew.cmu.edu>
+ * @date 2014-12-4
  */
 
 //#define DEBUG 0

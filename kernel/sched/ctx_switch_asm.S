@@ -6,9 +6,9 @@
  * no co-processor registers and that the caller is in SVC mode. Furthermore,
  * the SPSR is considered a spare/scratch register and hence, is not saved.
  *
- * @ Author: Ming Fang <mingf@andrew.cmu.edu>
- * @ Author: Hsueh-Hung Cheng <hsuehhuc@andrew.cmu.edu>
- * @ date 2014-11-24
+ * @author Ming Fang <mingf@andrew.cmu.edu>
+ * @author Hsueh-Hung Cheng <hsuehhuc@andrew.cmu.edu>
+ * @date 2014-12-4
  */
 
 	.file "ctx_switch_asm.S"

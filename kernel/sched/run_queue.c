@@ -2,9 +2,9 @@
  *
  * @ brief Run queue maintainence routines.
  *
- * @ Author: Ming Fang <mingf@andrew.cmu.edu>
- * @ Author: Hsueh-Hung Cheng <hsuehhuc@andrew.cmu.edu>
- * @ date 2014-11-24
+ * @author Ming Fang <mingf@andrew.cmu.edu>
+ * @author Hsueh-Hung Cheng <hsuehhuc@andrew.cmu.edu>
+ * @date 2014-12-4
  */
 
 #include <types.h>
